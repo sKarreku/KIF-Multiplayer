@@ -1,0 +1,620 @@
+{
+  "version": "2.2.0",
+  "release_date": "2026-01-04T23:04:24Z",
+  "changelog": "test",
+  "update_type": "delta",
+  "files": [
+    {
+      "path": "Data/Scripts/659_Multiplayer/000_Coop_RNG_CompactLog.rb",
+      "sha256": "93b4f02714b181882aa6263d1b298e930c91016ad383c52ae92b3690cca2b2e3",
+      "size": 585,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/000_Coop_RNG_CompactLog.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/000_Snapshot_CompactLog.rb",
+      "sha256": "7af9df4f328cf83f5b3fb9169cf05a8316b0e578aa45f8c797510fef84cae186",
+      "size": 2083,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/000_Snapshot_CompactLog.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/001_Debug.rb",
+      "sha256": "f1d46acc91f62a83650494b5097a6905070ba54e5851018d62007ef2a3417f80",
+      "size": 3593,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/001_Debug.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/001_HTTP_Wrapper.rb",
+      "sha256": "795d7c3cbb4131b31c83b1ac1a8b813ad70d630ff11c61b4ef38db58ab122980",
+      "size": 6240,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/001_HTTP_Wrapper.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/002_Client.rb",
+      "sha256": "6af33fec0a4e95a3d548dcdbb72d9b1e63f38249ed368623ab0057c96bf83a73",
+      "size": 109163,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/002_Client.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/002_Version_Checker.rb",
+      "sha256": "1d5dafd063f6663689672d684797d29c241ecceead9c24a6e0ca345cefdd0c2b",
+      "size": 5785,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/002_Version_Checker.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/003_UI_Connect.rb",
+      "sha256": "4386eb3b7e91d9e0ed3977dfc172eb2ca9f814f03d696d491f516d66d78a8f23",
+      "size": 7241,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/003_UI_Connect.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/003_Update_Downloader.rb",
+      "sha256": "8db1091dfc61ec63b7c044f0c7ad1cf4b32907286fdebc924e3bd3fe536da764",
+      "size": 8917,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/003_Update_Downloader.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/003_test.rb",
+      "sha256": "0782ab713fe3acfee4c06d5f0056f9e5f2af8680bd2d2c3cd41e870592fdef5d",
+      "size": 4543,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/003_test.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/004_UI_PlayerList.rb",
+      "sha256": "054d5982ddd670ab2e783bf713f3b7a09a09dfa6da4be25d26204a2a67ae57ea",
+      "size": 10402,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/004_UI_PlayerList.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/004_Update_Installer.rb",
+      "sha256": "90505561438591d514b2d9e10a447f3830da4288d2975dd23a22ff039632cc9b",
+      "size": 10230,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/004_Update_Installer.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/005_PlayerSprites.rb",
+      "sha256": "a3390e9df782af84b3e0c173190be5dd6b83dc15fdb81f6ba42de88951047ef2",
+      "size": 20334,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/005_PlayerSprites.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/005_Update_UI.rb",
+      "sha256": "518a20ae43ec0e68948780999b8e363626fdaab8d0f4b6419bebb168c1eada7a",
+      "size": 10049,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/005_Update_UI.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/006_UI_SquadMenu.rb",
+      "sha256": "426fa2efefb9b3e3995ea60defb98af0e22952e5e80417c3c9072d1936b82de0",
+      "size": 17310,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/006_UI_SquadMenu.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/006_Update_UI_Hook.rb",
+      "sha256": "dca5c8c40ec341d9e9ee68c6a2dedd8700c25a62b9425bca7a285203dbc5c39b",
+      "size": 12115,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/006_Update_UI_Hook.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/007_UI_SquadPrompt.rb",
+      "sha256": "9c92f4365c415fd575c0e615381e56c1d96242e64ca475cd5782821c28d3d329",
+      "size": 2270,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/007_UI_SquadPrompt.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/008_UI_DisconnectCleanup.rb",
+      "sha256": "3de2ff0801b90a3617cde7aadc7b5f0cb57fb92c1df60bee3a369a242d69fc2f",
+      "size": 2189,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/008_UI_DisconnectCleanup.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/009_PureMD5.rb",
+      "sha256": "f7c450c45e4d380980ca435987656c00788a31b5f2f0429db57472596cbb9524",
+      "size": 4790,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/009_PureMD5.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/010_FileIntegrity.rb",
+      "sha256": "ab604a71be8acbf6e2b5d4fdd0e43d9dfac45fd4c1d8e49c2ff140a567510f0f",
+      "size": 5930,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/010_FileIntegrity.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/012_UI_Trade.rb",
+      "sha256": "ee69f2cb6d42f3cc7cf36d28a5d9efa50d77c95b9931059140966765962a3042",
+      "size": 39992,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/012_UI_Trade.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/013_UI_GTS.rb",
+      "sha256": "37a6878c99548b4c94ba29fdd3e5a30f6c2a93baabc0cec046132a2f84ff871d",
+      "size": 52968,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/013_UI_GTS.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/016_Coop_WildHook_OLD_BACKUP.rb",
+      "sha256": "fc8d3897f0c625a52be6876f75fa8a09d0ad325948d73b42e5104d97c86c20b1",
+      "size": 13628,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/016_Coop_WildHook_OLD_BACKUP.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/017_Coop_WildHook_v2.rb",
+      "sha256": "cf8ff0ab63776f70395acbde7cb5b04cabc60444d666219c46df06a2142b2944",
+      "size": 44260,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/017_Coop_WildHook_v2.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/018_Coop_BattleControl.rb",
+      "sha256": "dbe57dbc109263f962b52a326de52ad967ce004fab162dc50ca8e1a639cf5237",
+      "size": 2300,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/018_Coop_BattleControl.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/019_Coop_SyncScreen.rb",
+      "sha256": "2dc9797ff7ab6b5c468d63ed290785eb88f891fe6037f92ae0dc679d340d3f3b",
+      "size": 6105,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/019_Coop_SyncScreen.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/020_Coop_BattleState.rb",
+      "sha256": "eda7cc298aa29ded756b0266a4c9f6d0be8a73aef1fc6508c06cd9e0b9db1d5a",
+      "size": 15442,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/020_Coop_BattleState.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/021_Coop_ActionSync.rb",
+      "sha256": "319bf06c4a88053525fa15eb1e91b98274fd9f4badff9fb43b26e08a9cbd9b8a",
+      "size": 31967,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/021_Coop_ActionSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/022_Coop_RNGSync.rb",
+      "sha256": "a169169f03f45c4fdcd8adec1486efcfcd41fbcaad2e7cb112e42ffc937e6423",
+      "size": 16986,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/022_Coop_RNGSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/023_Coop_BattleDebugHUD.rb",
+      "sha256": "9b1f43486447d992f74d28e03f2f988df31240132d7ba9015939016daf4e0686",
+      "size": 10540,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/023_Coop_BattleDebugHUD.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/024_Coop_AttackPhase_Alias.rb",
+      "sha256": "b584abb1ab1ebdf4b8d872472d6ac9686d65fd530b8ca3be18fbd453927e3926",
+      "size": 2916,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/024_Coop_AttackPhase_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/025_Coop_EndOfBattle_Alias.rb",
+      "sha256": "0c3228ec000a8a0d3562f938bc1debf6a15b2d611287207387f946202191a6ac",
+      "size": 7557,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/025_Coop_EndOfBattle_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/026_Coop_CommandPhase_Alias.rb",
+      "sha256": "1f16767878c5270e7c816326e5c078908a67ec293d4bde39b1f607b236e22be4",
+      "size": 12019,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/026_Coop_CommandPhase_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/027_NPCTrainer_Patch.rb",
+      "sha256": "ba4c14abb684fc03f98582949c589cc66a74334af2b7a017e9f82750ca1ed73a",
+      "size": 1249,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/027_NPCTrainer_Patch.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/028_Coop_ExpGain_Alias.rb",
+      "sha256": "30e555315ef0f6a233882465bb192ddff86b953c2340e8510284e895033f72b6",
+      "size": 11643,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/028_Coop_ExpGain_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/029_Coop_MoveLearningSync.rb",
+      "sha256": "d56b1ba47f5c7b6e364731151d4d623743342ec11c34a49a62f4c0c933d8fe03",
+      "size": 3059,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/029_Coop_MoveLearningSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/029_Coop_StorePokemon_Alias.rb",
+      "sha256": "33973270befcfeb567bf39aaa6e5b30407e5099f7c54ae4f11553260e51c3a0e",
+      "size": 6120,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/029_Coop_StorePokemon_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/030_Coop_SwitchSync.rb",
+      "sha256": "0c6b2b6b1843402204e533d9ba0033849e6f0aecf6e215a3df03948ad9283299",
+      "size": 5583,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/030_Coop_SwitchSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/031_Coop_SwitchPhase_Alias.rb",
+      "sha256": "fc2c4101daea1bd9a0abbeb9fde9dc6f651ac83ed4b94809df1574198f3c6b17",
+      "size": 9239,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/031_Coop_SwitchPhase_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/032_Coop_GainExp_Alias.rb",
+      "sha256": "5f73dda0a63d4e01674e6808256482b24f81a4934f0f2edc9fbacb1ba54667ab",
+      "size": 6530,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/032_Coop_GainExp_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/033_Coop_RNG_Debug.rb",
+      "sha256": "6dd7912dc263e9056f9591a6b27f31be812147b64ba46bf2af05970e008a14e3",
+      "size": 6561,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/033_Coop_RNG_Debug.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/035_Coop_RNG_LogComparison.rb",
+      "sha256": "92821fb8e254a2a2ae02c804e741e5d655b39132147ebf4825e012f0e1315129",
+      "size": 7086,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/035_Coop_RNG_LogComparison.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/036_Coop_TargetSync.rb",
+      "sha256": "791b58be4fe8d39276dd8b20c9212a3bd5f883f9834d8c4119060bfdce4806d6",
+      "size": 3922,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/036_Coop_TargetSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/037_Coop_Capture_Abort.rb",
+      "sha256": "d108c77a160f099db4b75c3cfe4ec8513ff73036a0cd1ed094bd7c3f6275430b",
+      "size": 3749,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/037_Coop_Capture_Abort.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/038_Coop_RegisterItem_Hook.rb",
+      "sha256": "101b87568cc13a82fb470b108b85a9c2857cb9cfec1e81d126887613f5c6d749",
+      "size": 1172,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/038_Coop_RegisterItem_Hook.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/038_Coop_SpectatorMode.rb",
+      "sha256": "2d091c09e2b289cfeaa88903af3f4c5a4a55b65382538cd5a54b45fa8c4a02e6",
+      "size": 2195,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/038_Coop_SpectatorMode.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/039_Coop_RunAwaySync.rb",
+      "sha256": "6ba8ee63cf2b21019531157de35b2c9d951df92b507efe471f20a9c60da85712",
+      "size": 5038,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/039_Coop_RunAwaySync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/040_Coop_RunAway_Alias.rb",
+      "sha256": "1e4c6cf8a55cdc4801d17d0991e769aa9dac121b4e92fd24df38069a0f4a887e",
+      "size": 6406,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/040_Coop_RunAway_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/041_Coop_Obedience_Fix.rb",
+      "sha256": "01b10447b131697f44843fd8b5c44c72447b79a54573e1da8fab90c7495c1457",
+      "size": 1712,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/041_Coop_Obedience_Fix.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/042_Coop_Whiteout_Detection.rb",
+      "sha256": "04dff11de5ae0d589efcda1db3ce9b215a5a9331670e7f9439852d5263977849",
+      "size": 2175,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/042_Coop_Whiteout_Detection.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/043_Coop_DisconnectHandler.rb",
+      "sha256": "25326dc890df0e2bb4e9b9e9ab091b6b26e3b6c54cc212d4e5944d49dd8e46ae",
+      "size": 3157,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/043_Coop_DisconnectHandler.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/044_Coop_LoseMoney_Fix.rb",
+      "sha256": "f25a385931d938f7a31ea8ea9f1f4f4eba15334539cf67c1d1c2d0464dcd0d19",
+      "size": 801,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/044_Coop_LoseMoney_Fix.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/045_Coop_PokedexFix.rb",
+      "sha256": "3e3c1b7cc300a45ec99c1f3d97c8aeb54a801f357d94e7d16b7abbc923efe47e",
+      "size": 778,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/045_Coop_PokedexFix.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/046_RateLimit.rb",
+      "sha256": "646997b4f5b86e88053fc77d870c45606fb5486606af2cc175a82bbdb1319342",
+      "size": 5689,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/046_RateLimit.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/047_DeltaCompression.rb",
+      "sha256": "a09a4f614e51b135faddb96eb73415fa3484b53bf06dd9b52692e9e9608d0618",
+      "size": 5508,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/047_DeltaCompression.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/048_DistanceBasedUpdates.rb",
+      "sha256": "38939e160ed008c6a94ad05ce1908bdab8b327af5b990b405815fc300ab2fa23",
+      "size": 6628,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/048_DistanceBasedUpdates.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/049_ClientInterpolation.rb",
+      "sha256": "2dbfa9550e4a621d8be5b535d02affd8db7c787be684f4910774e99e17d6c9b4",
+      "size": 8865,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/049_ClientInterpolation.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/050_UI_PlayerList_F3Toggle.rb",
+      "sha256": "5fbdce46aa174ff7429079bd0b14440ca9e674d84a142a31c621c94f3fd3ef46",
+      "size": 3045,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/050_UI_PlayerList_F3Toggle.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/051_UI_Squad_F4Toggle.rb",
+      "sha256": "069b24b9ad74bd5c91df83f3babd6b2163a950777342ed981b7bd0b751b897f5",
+      "size": 3192,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/051_UI_Squad_F4Toggle.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/055_Platinum_Currency.rb",
+      "sha256": "8c668b6a6bc37fd180bc013341f26ad9bbde1d36575a568f1233dbd4dd2bee52",
+      "size": 5051,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/055_Platinum_Currency.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/056_Platinum_Global.rb",
+      "sha256": "e5df4235e02c8014c895461ae8b89150c43031de10a143c81d921c89a07e4160",
+      "size": 1037,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/056_Platinum_Global.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/056b_Platinum_UUID_Storage.rb",
+      "sha256": "88f9502b5579069d81df5b75c17cbb140dd176991aab243bc62f0d27ea6538e9",
+      "size": 2876,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/056b_Platinum_UUID_Storage.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/057_Platinum_TrainerCard.rb",
+      "sha256": "7332f5bfe6903064ddbf535abae3f58e2271e8ff300517208f2a674f49a89a34",
+      "size": 7944,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/057_Platinum_TrainerCard.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/060_Chat_Core.rb",
+      "sha256": "5e85268c58e852ac0b24cb18855fb1650fece30908d6fe01be63fbc417d45174",
+      "size": 10191,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/060_Chat_Core.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/060_WildBattle_Platinum_Alias.rb",
+      "sha256": "8d485d3746b970c8f1488ad3f0846678d391d3552439a0a8a2bff4d8f3c74a67",
+      "size": 5063,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/060_WildBattle_Platinum_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/061_Chat_UI.rb",
+      "sha256": "8d4f10fea48dd2145a26b04f474b760281d0c78027fd2c04cd45faceef0fb966",
+      "size": 10199,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/061_Chat_UI.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/062_Chat_Input.rb",
+      "sha256": "b5dd003459fbffa06d886f161ef162f74b525d3293560611a76623a5edec4742",
+      "size": 13196,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/062_Chat_Input.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/065_Coop_TrainerHook.rb",
+      "sha256": "22adea91bbd8eb2b65c89557fa3e167777e70f8c284a59168e815b8322c5e00e",
+      "size": 31547,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/065_Coop_TrainerHook.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/066_Coop_TrainerWaitScreen.rb",
+      "sha256": "eeb66b3dd538b2bee3482f0b964b3506dc54f44b3b77abc3fd02e354009ba208",
+      "size": 19406,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/066_Coop_TrainerWaitScreen.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/074_Coop_ExpBarFix.rb",
+      "sha256": "f4fe7aa336ef9cde680dfdfb4fba1b204237b7560ddfbfc9cd2c5f50df0b6673",
+      "size": 1142,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/074_Coop_ExpBarFix.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/075_Coop_SceneSafety.rb",
+      "sha256": "5a67dd6e08bb78fdb0fb4c838140ea8814b234bcd88812aabb198d2c3b714624",
+      "size": 2302,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/075_Coop_SceneSafety.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/099_Coop_Turn0_PrioritySync.rb",
+      "sha256": "d79c16867de25f5ba614c9238d7f6a487a1923952dfda0d46c383c2fe0c72ff6",
+      "size": 2008,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/099_Coop_Turn0_PrioritySync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/099_pbAfterBattle_Alias.rb",
+      "sha256": "c96e1bd0c08f21754a51c2f4834c85b527ddf19dfa3e28539d1879885c8e6584",
+      "size": 1067,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/099_pbAfterBattle_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/100_Coop_MoveExecution_Debug.rb",
+      "sha256": "167e6f60692aac36decae27e6a1c7b410cb647eb2421e0d6f73b6afb51d03a1e",
+      "size": 1005,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/100_Coop_MoveExecution_Debug.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/100_Family_Pokemon_Patch.rb",
+      "sha256": "25c411f6ce47ad3cf1cb70ba3fc87906f21aaf209d45a316c9e6e8d300b598d6",
+      "size": 5328,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/100_Family_Pokemon_Patch.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/100_pbLearnMove_Alias.rb",
+      "sha256": "10574491d5a7505757e22e78ee69cdce4fe067a850f7b6546e4bec897a0c4408",
+      "size": 1993,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/100_pbLearnMove_Alias.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/101_Coop_BattleRNG_Override.rb",
+      "sha256": "3d9ac9127266580e7256cadd24144277bdd5c05c2aa93b3268703bb7d02dc661",
+      "size": 1019,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/101_Coop_BattleRNG_Override.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/101_Family_Config.rb",
+      "sha256": "c4a5529ad3b9b489b539a638c85c1973135e440ff15347f27fbe64efc11334ec",
+      "size": 12803,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/101_Family_Config.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/102_Family_Assignment_Hook.rb",
+      "sha256": "7a576f0fdeaa5396797945a9316e22c06852194cbf76572dc1b8efe6e33d4ddc",
+      "size": 6523,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/102_Family_Assignment_Hook.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/103_Family_Font_Rendering.rb",
+      "sha256": "813e544fcf37e298e9039d74d65d2e98de3f25e7c10ab81b7b0bfe4899ec480e",
+      "size": 10905,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/103_Family_Font_Rendering.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/104_Family_Outline_Effects.rb",
+      "sha256": "2a30055dd9af35cb1a005558c745856a3c0ffe643a3b3c7661a97e19a7eca518",
+      "size": 17731,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/104_Family_Outline_Effects.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/105_Family_Battle_Sprites.rb",
+      "sha256": "713cc7d43c83cb23968336a117fb08e33729a6286e5f5e11c794912e7a5b4c05",
+      "size": 21681,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/105_Family_Battle_Sprites.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/106_Family_Summary_UI.rb",
+      "sha256": "0bcf4be00fe22925ac114b9fd9f773ebdd286c3361c1ec81630187b79d4b7d09",
+      "size": 21720,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/106_Family_Summary_UI.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/107_Family_Testing_Commands.rb",
+      "sha256": "7c765d3ffe0b27761304383328385aad6db61568d76a7875dd22bf1ab59f1785",
+      "size": 13283,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/107_Family_Testing_Commands.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/108_Family_PokeRadar_Hook.rb",
+      "sha256": "c52f912fe8b7650ddc98ad552488e375bc064c84fc6676da1bb894ef061c45d8",
+      "size": 1110,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/108_Family_PokeRadar_Hook.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/110_Family_Talent_Infusion.rb",
+      "sha256": "e0fb972c6c7238db001d9167b0b3c3c929a99f56a74be8ac1a70384678dbad93",
+      "size": 5066,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/110_Family_Talent_Infusion.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/111_Family_Boosted_Talents.rb",
+      "sha256": "7011ef9f47081a1523c2e61848eeeb1cb947659493a8097ad5300051f0667305",
+      "size": 11462,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/111_Family_Boosted_Talents.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/112_Family_Type_Infusion.rb",
+      "sha256": "30a45908e39d0197e4577c4e106c38b1487781d5fc80a2d1952f727c61283cc6",
+      "size": 4759,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/112_Family_Type_Infusion.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/113_Family_Edge_Cases.rb",
+      "sha256": "e75478729524fbc3cb031b7fa53653c2a79e746ccc63c28efe755abc58551d9a",
+      "size": 5844,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/113_Family_Edge_Cases.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/114_Family_Abilities.rb",
+      "sha256": "b99bc5cc1e5873ffd13654d239f141ea23b49da41c0ec49c55a2deb0f4a88067",
+      "size": 3534,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/114_Family_Abilities.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/115_Family_Summary_Debug.rb",
+      "sha256": "3aa6ec4f1a4fab4caf4d184ad7a44db512117daa2882943daebcdf94f46d47f0",
+      "size": 2186,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/115_Family_Summary_Debug.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/116_Family_Fusion_Integration.rb",
+      "sha256": "543f8857807126133f874576e8c4d3f19f6e0e99d53225b2a26679212228e113",
+      "size": 10711,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/116_Family_Fusion_Integration.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/117_Family_Unfuse_Integration.rb",
+      "sha256": "7133e4c21b257c9bcd2d447197ae1a76e7ccbc1fb515a27b75f8e85b834e54af",
+      "size": 11435,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/117_Family_Unfuse_Integration.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/118_Family_Ability_Toggle.rb",
+      "sha256": "1169c4d0c20166c61dd635c3f67394d380beece22e85b6fea0147e5edc462dd7",
+      "size": 7724,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/118_Family_Ability_Toggle.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/119_Family_Double_Ability_Override.rb",
+      "sha256": "d47a3273beb185fcfca57eb63f19e586c11d84398af66e519e6aa3cc1022c926",
+      "size": 5262,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/119_Family_Double_Ability_Override.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/120_Family_Enemy_Assignment.rb",
+      "sha256": "1c685f9b71ffab8f5216c9ae572533489731a47fba99ba95e72ac38794a3967b",
+      "size": 4566,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/120_Family_Enemy_Assignment.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/121_DoubleAbilities_UI.rb",
+      "sha256": "177bc94759c86c187260a266997bc4a5aba976a55825431ad6968b705a035d11",
+      "size": 4452,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/121_DoubleAbilities_UI.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/996_Coop_StatusCount_Fix.rb",
+      "sha256": "c1f2c11bd166d0510463ada2e1a0bb002a9a8e8622b75f6f137a5b1f7a50a51a",
+      "size": 2534,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/996_Coop_StatusCount_Fix.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/997_Pokemon_StatusCount_Debug.rb",
+      "sha256": "5a93c15e87f23aaa1953cca717a727691b4f77abc099fab66de4953f2428aa78",
+      "size": 766,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/997_Pokemon_StatusCount_Debug.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/998_StatusSetter_Instrumentation.rb",
+      "sha256": "1869cfcac1e1e766a174496ca10bb3608ff93009108b3030fcaec296389412bd",
+      "size": 2991,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/998_StatusSetter_Instrumentation.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/999_StatusDebug.rb",
+      "sha256": "40aa9c92c6e829f99c08290e23537aced6ff81ca247150c442deaeb3888a511c",
+      "size": 4067,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/Data/Scripts/659_Multiplayer/999_StatusDebug.rb"
+    },
+    {
+      "path": "KIFM/server.rb",
+      "sha256": "063d68f8ed2d3cac0d183fa4a0766b23d005d28db2c2d971f0f3331a4c5fee91",
+      "size": 144180,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/files/KIFM/server.rb"
+    }
+  ],
+  "full_archive": {
+    "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/2.2.0/v2.2.0.rar",
+    "sha256": "58c6bb0fd9ab4d5d56e9a2868af311ead06b90b00c2da0685a4e2ab7e48265e0",
+    "size": 277891,
+    "filename": "v2.2.0.rar"
+  }
+}
