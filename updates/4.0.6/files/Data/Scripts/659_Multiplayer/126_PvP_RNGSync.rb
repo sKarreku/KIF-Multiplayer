@@ -123,10 +123,26 @@ module PvPRNGSync
       timeout_time = Time.now + timeout_seconds
 
       while !@seed_received && Time.now < timeout_time
+        # Check if opponent forfeited during our wait
+        if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+          if defined?(MultiplayerDebug)
+            MultiplayerDebug.info("PVP-RNG", "Opponent forfeited - stopping wait")
+          end
+          return true  # Return success, battle will end via decision
+        end
+
         Graphics.update if defined?(Graphics)
         Input.update if defined?(Input)
         sleep(0.016)  # ~60 FPS
       end
+    end
+
+    # Check if opponent forfeited
+    if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("PVP-RNG", "Opponent forfeited - battle ending")
+      end
+      return true
     end
 
     # Check if received

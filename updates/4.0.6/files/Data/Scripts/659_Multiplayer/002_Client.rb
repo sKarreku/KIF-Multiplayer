@@ -1716,6 +1716,17 @@ module MultiplayerClient
             next
           end
 
+          if data.start_with?("PVP_FORFEIT:")
+            battle_id = data.sub("PVP_FORFEIT:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("C-PVP", "[NET] Received PVP_FORFEIT: battle_id=#{battle_id}")
+            end
+            if defined?(PvPForfeitSync)
+              PvPForfeitSync.receive_forfeit(battle_id)
+            end
+            next
+          end
+
           # =========================
           # === GTS: Client side ===
           # =========================

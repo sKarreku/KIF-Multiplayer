@@ -107,7 +107,7 @@ module PvPSwitchSync
   # Wait for opponent's switch choice
   # Returns: party index to switch to, or nil on timeout
   #-----------------------------------------------------------------------------
-  def self.wait_for_switch(idxBattler, timeout_seconds = 30)
+  def self.wait_for_switch(idxBattler, timeout_seconds = 120)
     if defined?(MultiplayerDebug)
       MultiplayerDebug.info("PVP-SWITCH", "=== WAITING FOR SWITCH CHOICE ===")
       MultiplayerDebug.info("PVP-SWITCH", "  idxBattler: #{idxBattler}")
@@ -155,6 +155,14 @@ module PvPSwitchSync
 
     loop_count = 0
     while !@switch_received && Time.now < timeout_time
+      # Check if opponent forfeited during our wait
+      if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info("PVP-SWITCH", "Opponent forfeited - stopping wait")
+        end
+        return -1  # Return special value to indicate forfeit
+      end
+
       Graphics.update if defined?(Graphics)
       Input.update if defined?(Input)
       sleep(0.016)  # ~60 FPS
@@ -165,6 +173,14 @@ module PvPSwitchSync
         elapsed = (Time.now - @switch_wait_start_time).round(1)
         MultiplayerDebug.info("PVP-SWITCH", "Still waiting... (#{elapsed}s elapsed)")
       end
+    end
+
+    # Check if opponent forfeited
+    if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("PVP-SWITCH", "Opponent forfeited - battle ending")
+      end
+      return -1
     end
 
     # Check if received

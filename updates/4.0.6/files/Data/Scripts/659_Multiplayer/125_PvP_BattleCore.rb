@@ -631,6 +631,8 @@ def pbPvPBattle
 
   # Clean up
   PvPBattleState.reset()
+  PvPForfeitSync.reset() if defined?(PvPForfeitSync)
+  PvPActionSync.reset_sync_state() if defined?(PvPActionSync)
   MultiplayerClient.clear_pvp_state()
 
   return decision

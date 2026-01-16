@@ -1,7 +1,7 @@
 {
   "version": "4.0.6",
-  "release_date": "2026-01-16T20:47:42Z",
-  "changelog": "Added PokéRadar fix with family system",
+  "release_date": "2026-01-16T22:03:19Z",
+  "changelog": "Fixed Forfeit in PvP battles",
   "update_type": "delta",
   "files": [
     {
@@ -23,9 +23,15 @@
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/001_Debug.rb"
     },
     {
+      "path": "Data/Scripts/659_Multiplayer/001_SafeJSON.rb",
+      "md5": "c08024d15b962cee933ed0d7ad3839f2",
+      "size": 6362,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/001_SafeJSON.rb"
+    },
+    {
       "path": "Data/Scripts/659_Multiplayer/002_Client.rb",
-      "md5": "b96dde3936b304a0627a4f65a1d1aee4",
-      "size": 118568,
+      "md5": "ada74618d6a568baaa8a60a93fcb1a3a",
+      "size": 118979,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/002_Client.rb"
     },
     {
@@ -576,39 +582,45 @@
     },
     {
       "path": "Data/Scripts/659_Multiplayer/125_PvP_BattleCore.rb",
-      "md5": "4b1212f95f9bdb6585d50cee0b7f872e",
-      "size": 26607,
+      "md5": "c95c73d6a5effc0cc86b6c2772b006d3",
+      "size": 26722,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/125_PvP_BattleCore.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/126_PvP_RNGSync.rb",
-      "md5": "08860aeb767b82883571977981fd1f64",
-      "size": 7780,
+      "md5": "3bd96dfab97b593282d675eaea284f9a",
+      "size": 8384,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/126_PvP_RNGSync.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/127_PvP_ActionSync.rb",
-      "md5": "ca3c521cb22650c2bead8a4ee09d9cdd",
-      "size": 10724,
+      "md5": "de35ac63496af5c4f42695f7e13ae360",
+      "size": 11808,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/127_PvP_ActionSync.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/128_PvP_BattleAliases.rb",
-      "md5": "29f23425bd32892cf19ce7cde98ba080",
-      "size": 7502,
+      "md5": "c4213055c0d92442d02d946a1acb8235",
+      "size": 7919,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/128_PvP_BattleAliases.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/129_PvP_SwitchSync.rb",
-      "md5": "0c83836b038e88c404968de69cb2e4a3",
-      "size": 7210,
+      "md5": "f22921b270f9dbeb47e42a7b5c8ff620",
+      "size": 7799,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/129_PvP_SwitchSync.rb"
     },
     {
-      "path": "Data/Scripts/659_Multiplayer/130_PvP_SwitchPhase_Alias.rb",
-      "md5": "83f8950585b0dbd0e40af565017d6e00",
-      "size": 8272,
-      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/130_PvP_SwitchPhase_Alias.rb"
+      "path": "Data/Scripts/659_Multiplayer/130_PvP_ForfeitSync.rb",
+      "md5": "ea938eca682622cea71bcf9e764e8692",
+      "size": 4893,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/130_PvP_ForfeitSync.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/131_PvP_SwitchPhase_Alias.rb",
+      "md5": "395989df736a482c4cdcd15dfb10f49b",
+      "size": 8613,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/131_PvP_SwitchPhase_Alias.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/990_CouchCoop_Config.rb",
@@ -666,8 +678,8 @@
     },
     {
       "path": "KIFM/server.rb",
-      "md5": "90177dbb1a67a8a56c67e4dcf8fa9f8b",
-      "size": 150820,
+      "md5": "4b220bd457d4f31dae949b473f7aa1da",
+      "size": 151134,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/KIFM/server.rb"
     },
     {
@@ -769,9 +781,9 @@
   ],
   "full_archive": {
     "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/v4.0.6.rar",
-    "md5": "c07e473cb59f34dae195f55513750ae1",
-    "sha256": "3947d8170bfdcf4939df3e8ae57cb1490683be3bf1a8515495faf0548b1029a7",
-    "size": 1225614,
+    "md5": "a9a88d2b8b4586acd52e1d27cee55892",
+    "sha256": "c517b63a2dcbb3ea458d1415078ce1600fca9786166fe8efedfa72c7ea2db47e",
+    "size": 1231903,
     "filename": "v4.0.6.rar"
   }
 }

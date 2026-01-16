@@ -2884,6 +2884,15 @@ loop do
             next
           end
 
+          if data.start_with?("PVP_FORFEIT:")
+            # Echo forfeit to all other clients (ends battle immediately)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
           # =========================================
           # === GTS: Commands (over existing TCP) ===
           # =========================================

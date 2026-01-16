@@ -109,7 +109,7 @@ module PvPActionSync
   #-----------------------------------------------------------------------------
   # Wait for opponent's action and apply it to battle
   #-----------------------------------------------------------------------------
-  def self.wait_for_opponent_action(battle, timeout_seconds = 10)
+  def self.wait_for_opponent_action(battle, timeout_seconds = 120)
     return false unless defined?(PvPBattleState)
     return false unless PvPBattleState.in_pvp_battle?
 
@@ -153,10 +153,26 @@ module PvPActionSync
       timeout_time = Time.now + timeout_seconds
 
       while !@choice_received && Time.now < timeout_time
+        # Check if opponent forfeited during our wait
+        if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+          if defined?(MultiplayerDebug)
+            MultiplayerDebug.info("PVP-ACTION", "Opponent forfeited - stopping wait")
+          end
+          return true  # Return success, battle will end via decision
+        end
+
         Graphics.update if defined?(Graphics)
         Input.update if defined?(Input)
         sleep(0.016)  # ~60 FPS
       end
+    end
+
+    # Check if opponent forfeited (could have happened during buffer check)
+    if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("PVP-ACTION", "Opponent forfeited - battle ending")
+      end
+      return true
     end
 
     # Check if received
@@ -215,17 +231,21 @@ module PvPActionSync
   #-----------------------------------------------------------------------------
   def self.send_action(battle_id, turn_num, choice)
     begin
-      # Serialize action
+      # Serialize action using SafeJSON (no Marshal for security)
       data = {
-        turn: turn_num,
-        choice: choice
+        :turn => turn_num,
+        :choice => choice
       }
 
-      raw = Marshal.dump(data)
-      hex = BinHex.encode(raw) if defined?(BinHex)
+      # Use SafeJSON instead of Marshal for security
+      json_str = SafeJSON.dump(data)
 
-      # Send to opponent
-      message = "PVP_CHOICE:#{battle_id}|#{hex}"
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("PVP-ACTION", "Serialized action with SafeJSON: #{json_str.length} chars")
+      end
+
+      # Send to opponent (no hex encoding needed for JSON, but keep for consistency)
+      message = "PVP_CHOICE:#{battle_id}|#{json_str}"
       MultiplayerClient.send_data(message, rate_limit_type: :CHOICE) if defined?(MultiplayerClient)
 
       if defined?(MultiplayerDebug)
@@ -236,6 +256,7 @@ module PvPActionSync
     rescue => e
       if defined?(MultiplayerDebug)
         MultiplayerDebug.error("PVP-ACTION", "Failed to send action: #{e.message}")
+        MultiplayerDebug.error("PVP-ACTION", "  Backtrace: #{e.backtrace.first(3).join(' | ')}")
       end
       return false
     end
@@ -244,15 +265,14 @@ module PvPActionSync
   #-----------------------------------------------------------------------------
   # Receive opponent's action from network
   #-----------------------------------------------------------------------------
-  def self.receive_action(battle_id, hex_data)
+  def self.receive_action(battle_id, json_data)
     begin
-      # Deserialize action
-      raw = BinHex.decode(hex_data.to_s) if defined?(BinHex)
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("PVP-ACTION-NET", "Receiving action data: #{json_data.to_s.length} chars")
+      end
 
-      # SAFE MARSHAL: Size limit + validation
-      max_size = 10_000
-      data = SafeMarshal.load(raw, max_size: max_size) if defined?(SafeMarshal)
-      SafeMarshal.validate(data) if defined?(SafeMarshal)
+      # Deserialize action using SafeJSON (no Marshal for security)
+      data = SafeJSON.load(json_data.to_s)
 
       unless data.is_a?(Hash)
         raise "Decoded action data is not a Hash (got #{data.class})"
@@ -262,7 +282,7 @@ module PvPActionSync
       choice = data[:choice]
 
       if defined?(MultiplayerDebug)
-        MultiplayerDebug.info("PVP-ACTION-NET", "Received action: turn=#{turn}, choice=#{choice.inspect}")
+        MultiplayerDebug.info("PVP-ACTION-NET", "Parsed action: turn=#{turn}, choice=#{choice.inspect}")
       end
 
       # Validate battle context
@@ -296,6 +316,7 @@ module PvPActionSync
     rescue => e
       if defined?(MultiplayerDebug)
         MultiplayerDebug.error("PVP-ACTION", "Failed to receive action: #{e.message}")
+        MultiplayerDebug.error("PVP-ACTION", "  Backtrace: #{e.backtrace.first(3).join(' | ')}")
       end
       return false
     end
