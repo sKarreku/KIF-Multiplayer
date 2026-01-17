@@ -1,7 +1,7 @@
 {
   "version": "4.0.6",
-  "release_date": "2026-01-16T22:03:19Z",
-  "changelog": "Fixed Forfeit in PvP battles",
+  "release_date": "2026-01-17T00:18:57Z",
+  "changelog": "Fixed multi battles PvP",
   "update_type": "delta",
   "files": [
     {
@@ -576,14 +576,14 @@
     },
     {
       "path": "Data/Scripts/659_Multiplayer/124_UI_PvP_Settings.rb",
-      "md5": "5ab984c53cc4fb33e3223f7f5d3b06fc",
-      "size": 13045,
+      "md5": "5176080e73b0a8ea8f62f4bef6452d6e",
+      "size": 13270,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/124_UI_PvP_Settings.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/125_PvP_BattleCore.rb",
-      "md5": "c95c73d6a5effc0cc86b6c2772b006d3",
-      "size": 26722,
+      "md5": "d214bc0ba36562436308a072f0653bbf",
+      "size": 27228,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/125_PvP_BattleCore.rb"
     },
     {
@@ -594,8 +594,8 @@
     },
     {
       "path": "Data/Scripts/659_Multiplayer/127_PvP_ActionSync.rb",
-      "md5": "de35ac63496af5c4f42695f7e13ae360",
-      "size": 11808,
+      "md5": "57dc7674e5af84714c80b4286f301c17",
+      "size": 17425,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/files/Data/Scripts/659_Multiplayer/127_PvP_ActionSync.rb"
     },
     {
@@ -781,9 +781,9 @@
   ],
   "full_archive": {
     "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.6/v4.0.6.rar",
-    "md5": "a9a88d2b8b4586acd52e1d27cee55892",
-    "sha256": "c517b63a2dcbb3ea458d1415078ce1600fca9786166fe8efedfa72c7ea2db47e",
-    "size": 1231903,
+    "md5": "e527b78b0e1c978b19594fd2638d28fb",
+    "sha256": "f227e6c87d7989e418d33f903a98021c50acd8b4f3046160063057a8580ac2c1",
+    "size": 1233540,
     "filename": "v4.0.6.rar"
   }
 }

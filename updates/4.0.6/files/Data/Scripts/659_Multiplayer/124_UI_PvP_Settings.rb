@@ -335,6 +335,11 @@ class Scene_PvPSettings
     return if @disposed
 
     while MultiplayerClient.pvp_events_pending?
+      # CRITICAL: Re-check @disposed inside loop!
+      # open_party_selection() may set @disposed = true, and we must stop
+      # consuming events to avoid losing :party_received for pbPvPBattle()
+      break if @disposed
+
       ev = MultiplayerClient.next_pvp_event
       next unless ev
 
