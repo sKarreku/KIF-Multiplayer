@@ -18,10 +18,6 @@ echo Pushing to GitHub (main)...
 git push origin main
 
 echo.
-echo Switching back to dev branch...
-git checkout dev
-
-echo.
 echo ========================================
 echo Done! Check https://github.com/sKarreku/KIF-Multiplayer/tree/main/updates
 echo ========================================
