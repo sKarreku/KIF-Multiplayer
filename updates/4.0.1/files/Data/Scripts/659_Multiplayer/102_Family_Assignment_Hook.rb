@@ -36,8 +36,12 @@ class PokeBattle_Battle
   # Assign family to a newly-caught shiny Pokemon
   # Uses deterministic selection based on personalID (no battle RNG interference)
   def pbAssignFamilyToNewlyCaughtShiny(pkmn)
-    # Check if family system is enabled
-    return unless PokemonFamilyConfig::FAMILY_SYSTEM_ENABLED
+    # Check if family system is enabled (runtime setting first, then config)
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_enabled)
+      return if $PokemonSystem.mp_family_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return unless PokemonFamilyConfig.system_enabled?
+    end
 
     # Don't assign family to PokeRadar shinies
     if pkmn.pokeradar_encounter
@@ -64,7 +68,7 @@ class PokeBattle_Battle
     end
 
     # Use personalID for deterministic "random" selection (no battle RNG interference)
-    # Testing mode: always assign, Normal mode: 1% chance based on personalID
+    # Testing mode: always assign, Normal mode: chance based on personalID
     if PokemonFamilyConfig::FORCE_FAMILY_ASSIGNMENT
       # Force assignment in testing mode
       should_assign = true
@@ -72,10 +76,18 @@ class PokeBattle_Battle
         #MultiplayerDebug.info("FAMILY-ASSIGN", "Testing mode enabled - forcing family assignment for #{pkmn.name}")
       end
     else
+      # Check runtime setting first (from $PokemonSystem), then fall back to config
+      assignment_chance = 0.01  # Default 1%
+      if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_rate)
+        rate = $PokemonSystem.mp_family_rate || 1
+        assignment_chance = rate / 100.0
+      elsif defined?(PokemonFamilyConfig) && PokemonFamilyConfig.respond_to?(:get_assignment_chance)
+        assignment_chance = PokemonFamilyConfig.get_assignment_chance
+      end
+
       # Deterministic chance check using personalID (range 0-99)
-      # FAMILY_ASSIGNMENT_CHANCE of 0.01 = 1%, 0.50 = 50%, 0.99 = 99%
       seed_for_chance = pkmn.personalID % 100
-      threshold = (PokemonFamilyConfig::FAMILY_ASSIGNMENT_CHANCE * 100).round
+      threshold = (assignment_chance * 100).round
       should_assign = (seed_for_chance < threshold)
 
       if defined?(MultiplayerDebug)

@@ -378,6 +378,7 @@ module MultiplayerClient
   @players       = {}
   @name_sent     = false
   @in_battle = false
+  @in_menu = false
   @player_busy = false
 
 
@@ -436,16 +437,34 @@ module MultiplayerClient
     end
     h
   end
-  # --- Busy (battle) state ---
-  def self.mark_battle(on)
-    @in_battle   = !!on
-    @player_busy = @in_battle   # keep a local alias if other code uses it
-    ##MultiplayerDebug.info("C-STATE", "in_battle=#{@in_battle}")
+  # --- Busy (battle/menu) state ---
+  # Player is "busy" if they're in battle OR in a menu (party, bag, PC, etc.)
+  # This prevents coop wild battles from trying to sync with unavailable players
 
-    # broadcast busy=1/0 so squadmates' HUD and injector can see it
+  def self.mark_battle(on)
+    @in_battle = !!on
+    update_busy_state()
+  end
+
+  def self.mark_menu(on)
+    @in_menu = !!on
+    update_busy_state()
+  end
+
+  def self.update_busy_state
+    new_busy = @in_battle || @in_menu
+    return if new_busy == @player_busy  # No change, don't spam network
+
+    @player_busy = new_busy
+    ##MultiplayerDebug.info("C-STATE", "busy=#{@player_busy} (battle=#{@in_battle}, menu=#{@in_menu})")
+
+    # Broadcast busy=1/0 so squadmates' HUD and injector can see it
+    # Only send if connected
+    return unless @connected
+
     begin
-      send_data("SYNC:busy=#{@in_battle ? 1 : 0}")
-      ##MultiplayerDebug.info("C-BUSY", "Sent busy=#{@in_battle ? 1 : 0}")
+      send_data("SYNC:busy=#{@player_busy ? 1 : 0}")
+      ##MultiplayerDebug.info("C-BUSY", "Sent busy=#{@player_busy ? 1 : 0}")
     rescue => e
       ##MultiplayerDebug.warn("C-BUSY", "Failed to send busy flag: #{e.message}")
     end
@@ -454,10 +473,16 @@ module MultiplayerClient
   def self.in_battle?
     !!@in_battle
   end
-  
+
+  def self.in_menu?
+    !!@in_menu
+  end
+
   def self.player_busy?(sid = nil)
     sid = (sid || @session_id).to_s
-    return !!@in_battle if sid == @session_id.to_s
+    # For self, check local state
+    return @player_busy if sid == @session_id.to_s
+    # For others, check their broadcast busy flag
     h = @players[sid] rescue nil
     !!(h && h[:busy].to_i == 1)
   end
@@ -1691,6 +1716,17 @@ module MultiplayerClient
             next
           end
 
+          if data.start_with?("PVP_FORFEIT:")
+            battle_id = data.sub("PVP_FORFEIT:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("C-PVP", "[NET] Received PVP_FORFEIT: battle_id=#{battle_id}")
+            end
+            if defined?(PvPForfeitSync)
+              PvPForfeitSync.receive_forfeit(battle_id)
+            end
+            next
+          end
+
           # =========================
           # === GTS: Client side ===
           # =========================
@@ -2066,6 +2102,74 @@ module MultiplayerClient
             rescue => e
               ##MultiplayerDebug.error("C-FROMERR", "Failed to parse FROM wrapper: #{e.message}")
             end
+            next
+          end
+
+          # === MULTIPLAYER SETTINGS SYNC ===
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            # Format from server: MP_SETTINGS_REQUEST:<requester_sid>|<requester_name>|<sync_type>
+            parts = data.sub("MP_SETTINGS_REQUEST:", "").split("|", 3)
+            if parts.length >= 2
+              requester_sid = parts[0]
+              # If 3 parts: sid|name|type, if 2 parts: sid|type (old format)
+              sync_type = parts.length == 3 ? parts[2] : parts[1]
+              requester_name = parts.length == 3 ? parts[1] : requester_sid
+
+              if defined?(MultiplayerDebug)
+                MultiplayerDebug.info("MP-SYNC", "Settings request from #{requester_name} (#{requester_sid}), type: #{sync_type}")
+              end
+
+              if defined?(MultiplayerSettingsSync)
+                MultiplayerSettingsSync.handle_settings_request(requester_sid, sync_type)
+              end
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_REQUEST_SENT:")
+            # Confirmation that our request was sent
+            target_sid = data.sub("MP_SETTINGS_REQUEST_SENT:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("MP-SYNC", "Settings request sent to #{target_sid}")
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_ERROR:")
+            # Error from server (e.g., target offline)
+            error = data.sub("MP_SETTINGS_ERROR:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.warn("MP-SYNC", "Settings sync error: #{error}")
+            end
+            pbMessage(_INTL("Settings sync failed: Target player is offline.")) if error == "TARGET_OFFLINE"
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            # Format from server: MP_SETTINGS_RESPONSE:<sender_sid>|<sync_type>|<json_data>
+            parts = data.sub("MP_SETTINGS_RESPONSE:", "").split("|", 3)
+            if parts.length == 3
+              sender_sid, sync_type, json_data = parts
+
+              if defined?(MultiplayerDebug)
+                MultiplayerDebug.info("MP-SYNC", "Settings response from #{sender_sid}, type: #{sync_type}")
+              end
+
+              if defined?(MultiplayerSettingsSync)
+                MultiplayerSettingsSync.handle_settings_response(sync_type, json_data)
+              end
+            end
+            next
+          end
+
+          if data.start_with?("MP_TIMEOUT_SETTING:")
+            # Squad member broadcast their timeout setting
+            # Format: MP_TIMEOUT_SETTING:<disabled>
+            disabled = data.sub("MP_TIMEOUT_SETTING:", "").strip == "1"
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("MP-TIMEOUT", "Received timeout setting: disabled=#{disabled}")
+            end
+            # Could show a notification or update squad state
             next
           end
 

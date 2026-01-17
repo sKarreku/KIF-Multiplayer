@@ -17,8 +17,12 @@
 class Pokemon
   # Assign family to shiny Pokemon (called after Pokemon is fully created)
   def pbAssignFamilyIfShiny
-    # Check if family system is enabled
-    return unless PokemonFamilyConfig::FAMILY_SYSTEM_ENABLED
+    # Check if family system is enabled (runtime setting first, then config)
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_enabled)
+      return if $PokemonSystem.mp_family_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return unless PokemonFamilyConfig.system_enabled?
+    end
 
     # Only assign to shiny Pokemon
     return unless self.shiny? || self.fakeshiny?
@@ -39,10 +43,18 @@ class Pokemon
       # Force assignment in testing mode
       should_assign = true
     else
+      # Check runtime setting first (from $PokemonSystem), then fall back to config
+      assignment_chance = 0.01  # Default 1%
+      if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_rate)
+        rate = $PokemonSystem.mp_family_rate || 1
+        assignment_chance = rate / 100.0
+      elsif defined?(PokemonFamilyConfig) && PokemonFamilyConfig.respond_to?(:get_assignment_chance)
+        assignment_chance = PokemonFamilyConfig.get_assignment_chance
+      end
+
       # Deterministic chance check using personalID (range 0-99)
-      # FAMILY_ASSIGNMENT_CHANCE of 0.01 = 1%, 0.50 = 50%, 0.99 = 99%
       seed_for_chance = self.personalID % 100
-      threshold = (PokemonFamilyConfig::FAMILY_ASSIGNMENT_CHANCE * 100).round
+      threshold = (assignment_chance * 100).round
       should_assign = (seed_for_chance < threshold)
     end
 
@@ -98,9 +110,17 @@ end
 
 # Hook wild Pokemon creation to assign family (after Shiny Charm processing)
 Events.onWildPokemonCreate += proc { |_sender, e|
-  pokemon = e[0]
-  # Assign family to shiny wild Pokemon
-  pokemon.pbAssignFamilyIfShiny if pokemon.respond_to?(:pbAssignFamilyIfShiny)
+  begin
+    pokemon = e[0]
+    next if !pokemon
+    # Assign family to shiny wild Pokemon
+    pokemon.pbAssignFamilyIfShiny if pokemon.respond_to?(:pbAssignFamilyIfShiny)
+  rescue => err
+    # Never crash the encounter system
+    if defined?(MultiplayerDebug)
+      MultiplayerDebug.error("FAMILY-ENEMY", "Error in enemy assignment hook: #{err.message}")
+    end
+  end
 }
 
 #-------------------------------------------------------------------------------

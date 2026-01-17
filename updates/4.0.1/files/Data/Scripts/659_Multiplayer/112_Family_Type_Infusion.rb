@@ -18,9 +18,20 @@ class PokeBattle_Move
     ret = family_infusion_original_pbCalcTypeModSingle(moveType, defType, user, target)
 
     # Apply infused type effectiveness (multiplicative, like Flying Press)
-    if @infused_type && @infused_type != moveType
-      infused_eff = Effectiveness.calculate_one(@infused_type, defType)
-      ret *= infused_eff.to_f / Effectiveness::NORMAL_EFFECTIVE_ONE
+    # Safety checks to prevent crashes on multi-hit moves or edge cases
+    if @infused_type && @infused_type != moveType && defType
+      # Verify type exists before calculating (like Flying Press does)
+      if GameData::Type.exists?(@infused_type)
+        begin
+          infused_eff = Effectiveness.calculate_one(@infused_type, defType)
+          ret *= infused_eff.to_f / Effectiveness::NORMAL_EFFECTIVE_ONE
+        rescue => e
+          # Silently fail if effectiveness calculation crashes
+          if defined?(MultiplayerDebug)
+            MultiplayerDebug.warn("TYPE-INFUSION", "Effectiveness calc failed: #{e.message}")
+          end
+        end
+      end
     end
 
     return ret
@@ -62,17 +73,31 @@ class PokeBattle_Battler
 
   # Check if type infusion should apply to this move
   def should_infuse_type?(move)
-    return false unless PokemonFamilyConfig::ENABLE_TALENT_INFUSION
-    return false unless PokemonFamilyConfig::FAMILY_SYSTEM_ENABLED
-    return false unless self.pokemon && self.pokemon.has_family?
+    # Check runtime Family Abilities setting first (from $PokemonSystem)
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_abilities_enabled)
+      return false if $PokemonSystem.mp_family_abilities_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return false unless PokemonFamilyConfig.talent_infusion_enabled?
+    end
+
+    # Check runtime Family System setting
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_enabled)
+      return false if $PokemonSystem.mp_family_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return false unless PokemonFamilyConfig.system_enabled?
+    end
+
+    return false unless self.pokemon && self.pokemon.respond_to?(:has_family_data?) && self.pokemon.has_family_data?
     return false unless move.damagingMove?
 
     # Skip moves that transform into other moves (Metronome, Mirror Move, etc.)
     # These need to execute first before we can determine their type
-    return false if move.function_code == "UseRandomMove" # Metronome
-    return false if move.function_code == "UseLastMoveUsedByTarget" # Mirror Move
-    return false if move.function_code == "UseLastMoveUsed" # Copycat
-    return false if move.function_code == "UseMoveTargetIsAboutToUse" # Me First
+    # Note: Use @function (hex codes) not function_code (string names)
+    move_func = move.function rescue nil
+    return false if move_func == "0B6" # Metronome (UseRandomMove)
+    return false if move_func == "0B4" # Mirror Move (UseLastMoveUsedByTarget)
+    return false if move_func == "0AE" # Copycat (UseLastMoveUsed)
+    return false if move_func == "0B5" # Me First (UseMoveTargetIsAboutToUse)
 
     move_type = move.pbCalcType(self) rescue nil
     return false unless move_type
@@ -86,32 +111,44 @@ class PokeBattle_Battler
 
   # Calculate best infused type based on effectiveness against target
   def calculate_best_infused_type(move, target_idx)
-    return nil unless target_idx >= 0
+    return nil unless target_idx && target_idx >= 0
 
-    target = @battle.battlers[target_idx]
+    target = @battle.battlers[target_idx] rescue nil
     return nil unless target && !target.fainted?
 
-    family = self.pokemon.family
-    family_types = PokemonFamilyConfig.get_family_types(family)
-    return nil if family_types.empty?
+    family = self.pokemon.family rescue nil
+    return nil unless family
+
+    family_types = PokemonFamilyConfig.get_family_types(family) rescue []
+    return nil if family_types.nil? || family_types.empty?
 
     # Safely get move type
     move_type = move.pbCalcType(self) rescue nil
     return nil unless move_type
+
+    # Safely get target types
+    target_types = target.pbTypes(true) rescue nil
+    return nil unless target_types && !target_types.empty?
 
     best_type = nil
     best_effectiveness = 0
 
     family_types.each do |f_type|
       next if f_type == move_type  # Don't infuse with same type as move
+      next unless GameData::Type.exists?(f_type)  # Verify type is valid
 
-      # Calculate total effectiveness against target's types
-      total_eff = Effectiveness.calculate(f_type, *target.pbTypes(true))
+      begin
+        # Calculate total effectiveness against target's types
+        total_eff = Effectiveness.calculate(f_type, *target_types)
 
-      # Pick highest effectiveness (most damage)
-      if total_eff > best_effectiveness
-        best_effectiveness = total_eff
-        best_type = f_type
+        # Pick highest effectiveness (most damage)
+        if total_eff > best_effectiveness
+          best_effectiveness = total_eff
+          best_type = f_type
+        end
+      rescue
+        # Skip this type if calculation fails
+        next
       end
     end
 

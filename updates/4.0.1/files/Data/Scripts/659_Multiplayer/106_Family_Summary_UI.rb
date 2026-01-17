@@ -310,6 +310,11 @@ class PokemonSummary_Scene
   def create_summary_family_name
     return unless @pokemon && @pokemon.has_family?
 
+    # Check if Family Font is enabled in settings
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_font_enabled)
+      return if $PokemonSystem.mp_family_font_enabled == 0
+    end
+
     effect = PokemonFamilyConfig.get_family_effect(@pokemon.family)
     colors = PokemonFamilyConfig.get_subfamily_colors(@pokemon.family, @pokemon.subfamily)
     return unless effect && colors
@@ -411,14 +416,24 @@ class PokemonSummary_Scene
     end
   end
 
+  # Helper to check if family font effects should be shown
+  def should_show_family_font?
+    return false unless @pokemon && @pokemon.has_family?
+    # Check if Family Font is enabled in settings
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_font_enabled)
+      return $PokemonSystem.mp_family_font_enabled != 0
+    end
+    return true  # Default to enabled
+  end
+
   # Hook drawPageOne to hide original name text
   alias family_original_drawPageOne drawPageOne
   def drawPageOne
     # Call original to draw everything normally
     family_original_drawPageOne
 
-    # Hide original name + Pokeball if has family (our sprite will replace it)
-    if @pokemon && @pokemon.has_family?
+    # Hide original name + Pokeball if has family AND font is enabled (our sprite will replace it)
+    if should_show_family_font?
       overlay = @sprites["overlay"].bitmap
 
       # Hide Pokeball icon (drawn at x=14, y=60)
@@ -436,7 +451,7 @@ class PokemonSummary_Scene
   alias family_original_drawPageTwo drawPageTwo
   def drawPageTwo
     family_original_drawPageTwo
-    if @pokemon && @pokemon.has_family?
+    if should_show_family_font?
       overlay = @sprites["overlay"].bitmap
       overlay.fill_rect(14, 60, 40, 40, Color.new(0, 0, 0, 0))  # Hide Pokeball
       overlay.fill_rect(46, 56, 200, 32, Color.new(0, 0, 0, 0))  # Hide name
@@ -447,7 +462,7 @@ class PokemonSummary_Scene
   alias family_original_drawPageThree drawPageThree
   def drawPageThree
     family_original_drawPageThree
-    if @pokemon && @pokemon.has_family?
+    if should_show_family_font?
       overlay = @sprites["overlay"].bitmap
       overlay.fill_rect(14, 60, 40, 40, Color.new(0, 0, 0, 0))  # Hide Pokeball
       overlay.fill_rect(46, 56, 200, 32, Color.new(0, 0, 0, 0))  # Hide name
@@ -458,7 +473,7 @@ class PokemonSummary_Scene
   alias family_original_drawPageFour drawPageFour
   def drawPageFour
     family_original_drawPageFour
-    if @pokemon && @pokemon.has_family?
+    if should_show_family_font?
       overlay = @sprites["overlay"].bitmap
       overlay.fill_rect(14, 60, 40, 40, Color.new(0, 0, 0, 0))  # Hide Pokeball
       overlay.fill_rect(46, 56, 200, 32, Color.new(0, 0, 0, 0))  # Hide name

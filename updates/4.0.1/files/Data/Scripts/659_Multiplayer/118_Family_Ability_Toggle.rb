@@ -34,12 +34,18 @@ class PokemonSummary_Scene
 
       # === FAMILY ABILITY TOGGLE: Check for Shift/ACTION press on Skills page ===
       if Input.trigger?(Input::ACTION)
-        if defined?(MultiplayerDebug)
-          MultiplayerDebug.info("ABILITY-TOGGLE", "ACTION pressed! Page: #{@page}, has_family: #{@pokemon.respond_to?(:has_family?) && @pokemon.has_family?}")
+        # Check if Family Abilities are enabled in settings
+        family_abilities_enabled = true
+        if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_abilities_enabled)
+          family_abilities_enabled = ($PokemonSystem.mp_family_abilities_enabled != 0)
         end
 
-        # Check if on Skills page (page 3) AND Pokemon has family
-        if @page == 3 && @pokemon && @pokemon.respond_to?(:has_family?) && @pokemon.has_family?
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info("ABILITY-TOGGLE", "ACTION pressed! Page: #{@page}, has_family: #{@pokemon.respond_to?(:has_family?) && @pokemon.has_family?}, abilities_enabled: #{family_abilities_enabled}")
+        end
+
+        # Check if on Skills page (page 3) AND Pokemon has family AND abilities enabled
+        if @page == 3 && @pokemon && @pokemon.respond_to?(:has_family?) && @pokemon.has_family? && family_abilities_enabled
           ability2 = @pokemon.ability2
 
           if defined?(MultiplayerDebug)
@@ -156,8 +162,14 @@ class PokemonSummary_Scene
     # Call original first
     family_ability_toggle_original_drawPageThree
 
-    # Add toggle indicator for family Pokemon
-    if @pokemon && @pokemon.respond_to?(:has_family?) && @pokemon.has_family?
+    # Check if Family Abilities are enabled in settings
+    family_abilities_enabled = true
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_abilities_enabled)
+      family_abilities_enabled = ($PokemonSystem.mp_family_abilities_enabled != 0)
+    end
+
+    # Add toggle indicator for family Pokemon (only if abilities enabled)
+    if family_abilities_enabled && @pokemon && @pokemon.respond_to?(:has_family?) && @pokemon.has_family?
       ability2 = @pokemon.ability2
       if ability2
         overlay = @sprites["overlay"].bitmap

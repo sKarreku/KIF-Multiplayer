@@ -631,6 +631,8 @@ def pbPvPBattle
 
   # Clean up
   PvPBattleState.reset()
+  PvPForfeitSync.reset() if defined?(PvPForfeitSync)
+  PvPActionSync.reset_sync_state() if defined?(PvPActionSync)
   MultiplayerClient.clear_pvp_state()
 
   return decision
@@ -701,6 +703,11 @@ def pvp_exchange_parties_as_initiator(battle_id, opponent_sid, my_selections)
         end
 
         break
+      else
+        # Got a different event type - log it for debugging
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.warn("PVP-PARTY-EXCHANGE", "Got unexpected event type: #{ev[:type].inspect} (expected :party_received)")
+        end
       end
     end
 
@@ -751,6 +758,11 @@ def pvp_exchange_parties_as_receiver(battle_id, opponent_sid, my_selections)
         end
 
         break
+      else
+        # Got a different event type - log it for debugging
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.warn("PVP-PARTY-EXCHANGE", "Got unexpected event type: #{ev[:type].inspect} (expected :party_received)")
+        end
       end
     end
 

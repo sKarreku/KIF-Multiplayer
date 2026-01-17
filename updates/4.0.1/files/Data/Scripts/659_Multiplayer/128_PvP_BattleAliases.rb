@@ -117,7 +117,7 @@ class PokeBattle_Battle
     if defined?(PvPActionSync)
       @scene.pbDisplayMessage(_INTL("Waiting for opponent..."), true)
 
-      success = PvPActionSync.wait_for_opponent_action(self, 10)
+      success = PvPActionSync.wait_for_opponent_action(self, 120)
 
       # Clear waiting message
       @scene.instance_variable_set(:@briefMessage, false) if @scene
@@ -125,6 +125,15 @@ class PokeBattle_Battle
       if cw
         cw.text = ""
         cw.visible = false
+      end
+
+      # Check if opponent forfeited during action sync
+      if defined?(PvPForfeitSync) && PvPForfeitSync.opponent_forfeited?
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info("PVP-COMMAND", "Opponent forfeited during action sync - we win!")
+        end
+        pbDisplay(_INTL("Your opponent forfeited!"))
+        return  # @decision already set by PvPForfeitSync
       end
 
       unless success
@@ -141,7 +150,7 @@ class PokeBattle_Battle
       end
     end
 
-    # Check if battle ended during action sync
+    # Check if battle ended during action sync (includes forfeit)
     if @decision != 0
       if defined?(MultiplayerDebug)
         MultiplayerDebug.info("PVP-COMMAND", "Battle ended during action sync (decision=#{@decision})")

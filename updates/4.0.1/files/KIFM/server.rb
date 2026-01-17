@@ -2884,6 +2884,49 @@ loop do
             next
           end
 
+          if data.start_with?("PVP_FORFEIT:")
+            # Echo forfeit to all other clients (ends battle immediately)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          # =========================================
+          # === MULTIPLAYER SETTINGS SYNC ===
+          # =========================================
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            # Forward to all other clients (target will filter by SID)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            # Forward to all clients (target will filter by their SID)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("MP_TIMEOUT_SETTING:")
+            # Broadcast timeout setting to squad members
+            squad_id = client_data[c][:squad_id]
+            if squad_id && squads[squad_id]
+              squads[squad_id].each do |member_sid|
+                next if member_sid == sid
+                member_sock = sid_sockets[member_sid]
+                safe_send(member_sock, data) if member_sock
+              end
+            end
+            next
+          end
+
           # =========================================
           # === GTS: Commands (over existing TCP) ===
           # =========================================
@@ -3590,6 +3633,52 @@ loop do
           end
 
           if data == "REQ_DETAILS"
+            next
+          end
+
+          # ===========================
+          # === Settings Sync ==========
+          # ===========================
+          # MP_SETTINGS_REQUEST:<target_sid>|<sync_type>
+          # Routes settings request to target player
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            body = data.sub("MP_SETTINGS_REQUEST:", "")
+            target_sid, sync_type = body.split("|", 2)
+            target_sid = target_sid.to_s.strip
+            sync_type = (sync_type || "MP").to_s.strip
+
+            target_sock = sid_sockets[target_sid]
+            if target_sock
+              from_name = client_data[c] ? (client_data[c][:name] || "") : ""
+              # Send to target: MP_SETTINGS_REQUEST:<requester_sid>|<requester_name>|<sync_type>
+              safe_send(target_sock, "MP_SETTINGS_REQUEST:#{sid}|#{from_name}|#{sync_type}")
+              safe_send(c, "MP_SETTINGS_REQUEST_SENT:#{target_sid}")
+              MultiplayerDebug.info("SETTINGS", "Settings request #{sid} -> #{target_sid} (#{sync_type})")
+            else
+              safe_send(c, "MP_SETTINGS_ERROR:TARGET_OFFLINE")
+              MultiplayerDebug.warn("SETTINGS", "Settings request failed - target #{target_sid} offline")
+            end
+            next
+          end
+
+          # MP_SETTINGS_RESPONSE:<target_sid>|<sync_type>|<json_data>
+          # Routes settings response back to requester
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            body = data.sub("MP_SETTINGS_RESPONSE:", "")
+            # Split only first two pipes to preserve JSON data
+            parts = body.split("|", 3)
+            target_sid = parts[0].to_s.strip
+            sync_type = parts[1].to_s.strip
+            json_data = parts[2].to_s
+
+            target_sock = sid_sockets[target_sid]
+            if target_sock
+              # Send to requester: MP_SETTINGS_RESPONSE:<sender_sid>|<sync_type>|<json_data>
+              safe_send(target_sock, "MP_SETTINGS_RESPONSE:#{sid}|#{sync_type}|#{json_data}")
+              MultiplayerDebug.info("SETTINGS", "Settings response #{sid} -> #{target_sid} (#{sync_type})")
+            else
+              MultiplayerDebug.warn("SETTINGS", "Settings response failed - target #{target_sid} offline")
+            end
             next
           end
 

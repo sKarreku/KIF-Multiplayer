@@ -9,14 +9,27 @@
 #===============================================================================
 
 #===============================================================================
+# Helper method to check if Family Abilities are enabled
+#===============================================================================
+def family_abilities_enabled?
+  # Check runtime Family Abilities setting first (from $PokemonSystem)
+  if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_abilities_enabled)
+    return $PokemonSystem.mp_family_abilities_enabled != 0
+  elsif defined?(PokemonFamilyConfig)
+    return PokemonFamilyConfig.talent_infusion_enabled?
+  end
+  return true  # Default to enabled if no setting found
+end
+
+#===============================================================================
 # Pokemon Class - ability2 getter override
 #===============================================================================
 class Pokemon
   # Override ability2 to work for Family Pokemon without switch requirement
   alias family_double_ability_original_ability2 ability2
   def ability2
-    # If this is a Family Pokemon, always return ability2 (bypass switch check)
-    if self.respond_to?(:has_family?) && self.has_family?
+    # If this is a Family Pokemon AND abilities are enabled, return ability2 (bypass switch check)
+    if self.respond_to?(:has_family?) && self.has_family? && family_abilities_enabled?
       return GameData::Ability.try_get(ability2_id())
     end
 
@@ -32,10 +45,10 @@ class PokeBattle_Battler
   # Override ability2 to work for Family Pokemon without switch requirement
   alias family_double_ability_original_ability2 ability2
   def ability2
-    # If this battler's Pokemon has a family, always return ability2 (bypass switch check)
+    # If this battler's Pokemon has a family AND abilities enabled, return ability2 (bypass switch check)
     if @ability2_id
       pkmn = self.pokemon rescue nil
-      if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family?
+      if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family? && family_abilities_enabled?
         return GameData::Ability.try_get(@ability2_id)
       end
     end
@@ -47,9 +60,9 @@ class PokeBattle_Battler
   # Override hasActiveAbility to check ability2 for Family Pokemon
   alias family_double_ability_original_hasActiveAbility hasActiveAbility?
   def hasActiveAbility?(check_ability, ignore_fainted = false, mold_broken = false)
-    # For Family Pokemon, always check both abilities
+    # For Family Pokemon with abilities enabled, check both abilities
     pkmn = self.pokemon rescue nil
-    if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family? && @ability2_id
+    if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family? && family_abilities_enabled? && @ability2_id
       return false if !abilityActive?(ignore_fainted)
       if check_ability.is_a?(Array)
         return check_ability.include?(@ability_id) || check_ability.include?(@ability2_id)
@@ -67,9 +80,9 @@ class PokeBattle_Battler
     # Call original first
     family_double_ability_original_pbEffectsOnSwitchIn(switchIn)
 
-    # Trigger ability2 for Family Pokemon
+    # Trigger ability2 for Family Pokemon (if abilities enabled)
     pkmn = self.pokemon rescue nil
-    if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family? && @ability2_id
+    if pkmn && pkmn.respond_to?(:has_family?) && pkmn.has_family? && family_abilities_enabled? && @ability2_id
       # Trigger ability2 switch-in handler if it exists
       if (!fainted? && unstoppableAbility?) || abilityActive?
         # Mark that ability2 is about to trigger (for splash display)

@@ -16,11 +16,66 @@ module PokemonFamilyConfig
   FAMILY_SYSTEM_ENABLED = true      # Set to false to disable all family features
 
   # Global toggle for talent and type infusion system (disabled by default)
-  ENABLE_TALENT_INFUSION = false    # Set to true to enable Family talents + type infusion
+  ENABLE_TALENT_INFUSION = true    # Set to true to enable Family talents + type infusion
 
   FORCE_ALL_SHINY = false           # Force all wild Pokemon to be shiny
   FORCE_FAMILY_ASSIGNMENT = false   # Force all shinies to get family (100% chance)
   FAMILY_ASSIGNMENT_CHANCE = 0.01   # Normal mode: 1% chance for shinies to get family
+
+  #=============================================================================
+  # Runtime toggles (can be changed via Multiplayer Options menu)
+  # These override the constants above when set
+  #=============================================================================
+  class << self
+    attr_accessor :runtime_system_enabled
+    attr_accessor :runtime_talent_infusion_enabled
+    attr_accessor :runtime_assignment_chance
+    attr_accessor :runtime_font_enabled
+  end
+
+  # Initialize runtime values from constants (happens once at load)
+  @runtime_system_enabled = nil  # nil means use constant
+  @runtime_talent_infusion_enabled = nil
+  @runtime_assignment_chance = nil
+  @runtime_font_enabled = nil
+
+  # Setters for Multiplayer Options menu
+  def self.set_system_enabled(value)
+    @runtime_system_enabled = value
+  end
+
+  def self.set_talent_infusion_enabled(value)
+    @runtime_talent_infusion_enabled = value
+  end
+
+  def self.set_assignment_chance(value)
+    @runtime_assignment_chance = value
+  end
+
+  def self.set_font_enabled(value)
+    @runtime_font_enabled = value
+  end
+
+  # Getters that check runtime value first, then fall back to constant
+  def self.system_enabled?
+    return @runtime_system_enabled unless @runtime_system_enabled.nil?
+    FAMILY_SYSTEM_ENABLED
+  end
+
+  def self.talent_infusion_enabled?
+    return @runtime_talent_infusion_enabled unless @runtime_talent_infusion_enabled.nil?
+    ENABLE_TALENT_INFUSION
+  end
+
+  def self.get_assignment_chance
+    return @runtime_assignment_chance unless @runtime_assignment_chance.nil?
+    FAMILY_ASSIGNMENT_CHANCE
+  end
+
+  def self.font_enabled?
+    return @runtime_font_enabled unless @runtime_font_enabled.nil?
+    true  # Default: fonts enabled
+  end
 
   # 8 Families with font + effect mapping + rarity weights
   # Font names MUST match internal font family names (not filenames)
