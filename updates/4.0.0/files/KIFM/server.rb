@@ -2742,6 +2742,191 @@ loop do
           end
 
 
+          # ===========================
+          # === PvP: Commands =========
+          # ===========================
+          if data.start_with?("PVP_INVITE:")
+            # Rate limit check (3 invites per second)
+            unless ServerRateLimit.allow?(c, :PVP_INVITE)
+              MultiplayerDebug.warn("PVP", "Rate limited PVP_INVITE from #{sid} (#{ServerRateLimit.current_rate(c, :PVP_INVITE)}/s)")
+              safe_send(c, "PVP_ERROR:RATE_LIMIT")
+              next
+            end
+
+            target_sid = data.sub("PVP_INVITE:", "").strip
+            target_sock = sid_sockets[target_sid]
+
+            if target_sock
+              from_name = client_data[c] ? (client_data[c][:name] || "") : ""
+              safe_send(target_sock, "PVP_INVITE:#{sid}|#{from_name}")
+              safe_send(c, "PVP_INVITE_SENT:#{target_sid}")
+              MultiplayerDebug.info("PVP", "Invite #{sid} -> #{target_sid}")
+            else
+              safe_send(c, "PVP_ERROR:TARGET_OFFLINE")
+            end
+            next
+          end
+
+          if data.start_with?("PVP_RESP:")
+            # Rate limit check (3 responses per second)
+            unless ServerRateLimit.allow?(c, :PVP_INVITE)
+              MultiplayerDebug.warn("PVP", "Rate limited PVP_RESP from #{sid}")
+              next
+            end
+
+            body = data.sub("PVP_RESP:", "")
+            from_sid, response = body.split("|", 2)
+            from_sock = sid_sockets[from_sid]
+
+            if from_sock
+              if response == "ACCEPT"
+                safe_send(from_sock, "PVP_ACCEPTED:#{sid}")
+                safe_send(c, "PVP_ACCEPTED:#{from_sid}")
+                MultiplayerDebug.info("PVP", "Accepted by #{sid} for #{from_sid}")
+              else
+                safe_send(from_sock, "PVP_DECLINED:#{sid}")
+                MultiplayerDebug.info("PVP", "Declined by #{sid} for #{from_sid}")
+              end
+            end
+            next
+          end
+
+          if data.start_with?("PVP_SETTINGS_UPDATE:")
+            body = data.sub("PVP_SETTINGS_UPDATE:", "")
+            battle_id, json_settings = body.split("|", 2)
+
+            # Broadcast to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_PARTY_SELECTION:")
+            body = data.sub("PVP_PARTY_SELECTION:", "")
+            battle_id, hex_indices = body.split("|", 2)
+
+            # Store selection but don't echo (blind pick)
+            # Note: Server doesn't need to persist this for Phase 1
+            next
+          end
+
+          if data.start_with?("PVP_PARTY_PUSH:")
+            body = data.sub("PVP_PARTY_PUSH:", "")
+            battle_id, hex_party = body.split("|", 2)
+
+            # Echo to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_START_BATTLE:")
+            body = data.sub("PVP_START_BATTLE:", "")
+            battle_id, json_settings = body.split("|", 2)
+
+            # Echo to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_CANCEL:")
+            battle_id = data.sub("PVP_CANCEL:", "").strip
+
+            # Broadcast abort to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, "PVP_ABORT:#{battle_id}|CANCELLED")
+            end
+            next
+          end
+
+          # PVP Battle Synchronization Messages (Phase 5)
+          if data.start_with?("PVP_CHOICE:")
+            # Echo action choices to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_RNG_SEED:")
+            # Echo RNG seed to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_RNG_SEED_ACK:")
+            # Echo acknowledgment to all other clients
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_SWITCH:")
+            # Echo switch choices to all other clients (Phase 6 - Switch Sync)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_FORFEIT:")
+            # Echo forfeit to all other clients (ends battle immediately)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          # =========================================
+          # === MULTIPLAYER SETTINGS SYNC ===
+          # =========================================
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            # Forward to all other clients (target will filter by SID)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            # Forward to all clients (target will filter by their SID)
+            sid_sockets.each do |other_sid, other_sock|
+              next if other_sid == sid
+              safe_send(other_sock, data)
+            end
+            next
+          end
+
+          if data.start_with?("MP_TIMEOUT_SETTING:")
+            # Broadcast timeout setting to squad members
+            squad_id = client_data[c][:squad_id]
+            if squad_id && squads[squad_id]
+              squads[squad_id].each do |member_sid|
+                next if member_sid == sid
+                member_sock = sid_sockets[member_sid]
+                safe_send(member_sock, data) if member_sock
+              end
+            end
+            next
+          end
+
           # =========================================
           # === GTS: Commands (over existing TCP) ===
           # =========================================
@@ -3448,6 +3633,52 @@ loop do
           end
 
           if data == "REQ_DETAILS"
+            next
+          end
+
+          # ===========================
+          # === Settings Sync ==========
+          # ===========================
+          # MP_SETTINGS_REQUEST:<target_sid>|<sync_type>
+          # Routes settings request to target player
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            body = data.sub("MP_SETTINGS_REQUEST:", "")
+            target_sid, sync_type = body.split("|", 2)
+            target_sid = target_sid.to_s.strip
+            sync_type = (sync_type || "MP").to_s.strip
+
+            target_sock = sid_sockets[target_sid]
+            if target_sock
+              from_name = client_data[c] ? (client_data[c][:name] || "") : ""
+              # Send to target: MP_SETTINGS_REQUEST:<requester_sid>|<requester_name>|<sync_type>
+              safe_send(target_sock, "MP_SETTINGS_REQUEST:#{sid}|#{from_name}|#{sync_type}")
+              safe_send(c, "MP_SETTINGS_REQUEST_SENT:#{target_sid}")
+              MultiplayerDebug.info("SETTINGS", "Settings request #{sid} -> #{target_sid} (#{sync_type})")
+            else
+              safe_send(c, "MP_SETTINGS_ERROR:TARGET_OFFLINE")
+              MultiplayerDebug.warn("SETTINGS", "Settings request failed - target #{target_sid} offline")
+            end
+            next
+          end
+
+          # MP_SETTINGS_RESPONSE:<target_sid>|<sync_type>|<json_data>
+          # Routes settings response back to requester
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            body = data.sub("MP_SETTINGS_RESPONSE:", "")
+            # Split only first two pipes to preserve JSON data
+            parts = body.split("|", 3)
+            target_sid = parts[0].to_s.strip
+            sync_type = parts[1].to_s.strip
+            json_data = parts[2].to_s
+
+            target_sock = sid_sockets[target_sid]
+            if target_sock
+              # Send to requester: MP_SETTINGS_RESPONSE:<sender_sid>|<sync_type>|<json_data>
+              safe_send(target_sock, "MP_SETTINGS_RESPONSE:#{sid}|#{sync_type}|#{json_data}")
+              MultiplayerDebug.info("SETTINGS", "Settings response #{sid} -> #{target_sid} (#{sync_type})")
+            else
+              MultiplayerDebug.warn("SETTINGS", "Settings response failed - target #{target_sid} offline")
+            end
             next
           end
 

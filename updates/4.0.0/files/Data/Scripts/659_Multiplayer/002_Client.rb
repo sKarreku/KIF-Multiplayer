@@ -378,6 +378,7 @@ module MultiplayerClient
   @players       = {}
   @name_sent     = false
   @in_battle = false
+  @in_menu = false
   @player_busy = false
 
 
@@ -397,6 +398,10 @@ module MultiplayerClient
 
   # --- Trade event queue for UI ---
   @_trade_event_q = []
+
+  # --- PvP client state ---
+  @pvp = nil  # PvP session state
+  @_pvp_event_q = []  # Event queue for UI
 
   # --- GTS client state (simplified - uses platinum UUID) ---
   @_gts_event_q    = []   # push events to UI layer
@@ -432,16 +437,34 @@ module MultiplayerClient
     end
     h
   end
-  # --- Busy (battle) state ---
-  def self.mark_battle(on)
-    @in_battle   = !!on
-    @player_busy = @in_battle   # keep a local alias if other code uses it
-    ##MultiplayerDebug.info("C-STATE", "in_battle=#{@in_battle}")
+  # --- Busy (battle/menu) state ---
+  # Player is "busy" if they're in battle OR in a menu (party, bag, PC, etc.)
+  # This prevents coop wild battles from trying to sync with unavailable players
 
-    # broadcast busy=1/0 so squadmates' HUD and injector can see it
+  def self.mark_battle(on)
+    @in_battle = !!on
+    update_busy_state()
+  end
+
+  def self.mark_menu(on)
+    @in_menu = !!on
+    update_busy_state()
+  end
+
+  def self.update_busy_state
+    new_busy = @in_battle || @in_menu
+    return if new_busy == @player_busy  # No change, don't spam network
+
+    @player_busy = new_busy
+    ##MultiplayerDebug.info("C-STATE", "busy=#{@player_busy} (battle=#{@in_battle}, menu=#{@in_menu})")
+
+    # Broadcast busy=1/0 so squadmates' HUD and injector can see it
+    # Only send if connected
+    return unless @connected
+
     begin
-      send_data("SYNC:busy=#{@in_battle ? 1 : 0}")
-      ##MultiplayerDebug.info("C-BUSY", "Sent busy=#{@in_battle ? 1 : 0}")
+      send_data("SYNC:busy=#{@player_busy ? 1 : 0}")
+      ##MultiplayerDebug.info("C-BUSY", "Sent busy=#{@player_busy ? 1 : 0}")
     rescue => e
       ##MultiplayerDebug.warn("C-BUSY", "Failed to send busy flag: #{e.message}")
     end
@@ -450,10 +473,16 @@ module MultiplayerClient
   def self.in_battle?
     !!@in_battle
   end
-  
+
+  def self.in_menu?
+    !!@in_menu
+  end
+
   def self.player_busy?(sid = nil)
     sid = (sid || @session_id).to_s
-    return !!@in_battle if sid == @session_id.to_s
+    # For self, check local state
+    return @player_busy if sid == @session_id.to_s
+    # For others, check their broadcast busy flag
     h = @players[sid] rescue nil
     !!(h && h[:busy].to_i == 1)
   end
@@ -1561,6 +1590,143 @@ module MultiplayerClient
             next
           end
 
+          # ===========================================
+          # === PvP Battle Invitations ===
+          # ===========================================
+          if data.start_with?("PVP_INVITE:")
+            body = data.sub("PVP_INVITE:", "")
+            from_sid, from_name = body.split("|", 2)
+
+            # Rate limiting check (prevent spam invitations)
+            unless check_marshal_rate_limit(from_sid)
+              ##MultiplayerDebug.warn("PVP-INVITE", "Dropped PvP invite from #{from_sid} - rate limit exceeded")
+              next
+            end
+
+            enqueue_toast(_INTL("{1} wants to battle!", from_name.empty? ? from_sid : from_name))
+            push_pvp_event(type: :invite, data: { from_sid: from_sid, from_name: from_name }, timestamp: Time.now)
+            next
+          end
+
+          if data.start_with?("PVP_INVITE_SENT:")
+            target_sid = data.sub("PVP_INVITE_SENT:", "")
+            enqueue_toast(_INTL("Battle request sent."))
+            next
+          end
+
+          if data.start_with?("PVP_DECLINED:")
+            from_sid = data.sub("PVP_DECLINED:", "")
+            enqueue_toast(_INTL("Battle request was declined."))
+            push_pvp_event(type: :declined, data: { from_sid: from_sid })
+            next
+          end
+
+          if data.start_with?("PVP_ERROR:")
+            error_type = data.sub("PVP_ERROR:", "").strip
+            case error_type
+            when "RATE_LIMIT"
+              enqueue_toast(_INTL("Too many battle requests. Please wait."))
+            when "TARGET_OFFLINE"
+              enqueue_toast(_INTL("Player is offline."))
+            else
+              enqueue_toast(_INTL("Battle request failed."))
+            end
+            next
+          end
+
+          if data.start_with?("PVP_ACCEPTED:")
+            from_sid = data.sub("PVP_ACCEPTED:", "")
+            push_pvp_event(type: :accepted, data: { from_sid: from_sid })
+            next
+          end
+
+          if data.start_with?("PVP_SETTINGS_UPDATE:")
+            body = data.sub("PVP_SETTINGS_UPDATE:", "")
+            battle_id, json_settings = body.split("|", 2)
+            begin
+              settings = MiniJSON.parse(json_settings)
+              push_pvp_event(type: :settings_update, data: settings)
+            rescue => e
+              ##MultiplayerDebug.warn("C-PVP", "Bad JSON in PVP_SETTINGS_UPDATE: #{e.message}")
+            end
+            next
+          end
+
+          if data.start_with?("PVP_PARTY_PUSH:")
+            body = data.sub("PVP_PARTY_PUSH:", "")
+            battle_id, hex_party = body.split("|", 2)
+            begin
+              party_data = BinHex.decode(hex_party)
+              party = SafeMarshal.load(party_data, max_size: SafeMarshal::MAX_PARTY_SIZE)
+              push_pvp_event(type: :party_received, data: { battle_id: battle_id, party: party })
+            rescue => e
+              ##MultiplayerDebug.error("C-PVP", "Failed to decode party: #{e.message}")
+            end
+            next
+          end
+
+          if data.start_with?("PVP_START_BATTLE:")
+            body = data.sub("PVP_START_BATTLE:", "")
+            battle_id, json_settings = body.split("|", 2)
+            begin
+              settings = MiniJSON.parse(json_settings)
+              push_pvp_event(type: :start_battle, data: { battle_id: battle_id, settings: settings })
+            rescue => e
+              ##MultiplayerDebug.warn("C-PVP", "Bad JSON in PVP_START_BATTLE: #{e.message}")
+            end
+            next
+          end
+
+          if data.start_with?("PVP_ABORT:")
+            body = data.sub("PVP_ABORT:", "")
+            battle_id, reason = body.split("|", 2)
+            push_pvp_event(type: :abort, data: { battle_id: battle_id, reason: reason })
+            next
+          end
+
+          if data.start_with?("PVP_RNG_SEED:")
+            body = data.sub("PVP_RNG_SEED:", "")
+            battle_id, turn, seed = body.split("|", 3)
+            if defined?(PvPRNGSync)
+              PvPRNGSync.receive_seed(battle_id, turn.to_i, seed.to_i)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_RNG_SEED_ACK:")
+            # Acknowledgment from receiver (optional, for debugging)
+            next
+          end
+
+          if data.start_with?("PVP_CHOICE:")
+            body = data.sub("PVP_CHOICE:", "")
+            battle_id, hex_data = body.split("|", 2)
+            if defined?(PvPActionSync)
+              PvPActionSync.receive_action(battle_id, hex_data)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_SWITCH:")
+            body = data.sub("PVP_SWITCH:", "")
+            battle_id, idxParty = body.split("|", 2)
+            if defined?(PvPSwitchSync)
+              PvPSwitchSync.receive_switch(battle_id, idxParty.to_i)
+            end
+            next
+          end
+
+          if data.start_with?("PVP_FORFEIT:")
+            battle_id = data.sub("PVP_FORFEIT:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("C-PVP", "[NET] Received PVP_FORFEIT: battle_id=#{battle_id}")
+            end
+            if defined?(PvPForfeitSync)
+              PvPForfeitSync.receive_forfeit(battle_id)
+            end
+            next
+          end
+
           # =========================
           # === GTS: Client side ===
           # =========================
@@ -1936,6 +2102,74 @@ module MultiplayerClient
             rescue => e
               ##MultiplayerDebug.error("C-FROMERR", "Failed to parse FROM wrapper: #{e.message}")
             end
+            next
+          end
+
+          # === MULTIPLAYER SETTINGS SYNC ===
+          if data.start_with?("MP_SETTINGS_REQUEST:")
+            # Format from server: MP_SETTINGS_REQUEST:<requester_sid>|<requester_name>|<sync_type>
+            parts = data.sub("MP_SETTINGS_REQUEST:", "").split("|", 3)
+            if parts.length >= 2
+              requester_sid = parts[0]
+              # If 3 parts: sid|name|type, if 2 parts: sid|type (old format)
+              sync_type = parts.length == 3 ? parts[2] : parts[1]
+              requester_name = parts.length == 3 ? parts[1] : requester_sid
+
+              if defined?(MultiplayerDebug)
+                MultiplayerDebug.info("MP-SYNC", "Settings request from #{requester_name} (#{requester_sid}), type: #{sync_type}")
+              end
+
+              if defined?(MultiplayerSettingsSync)
+                MultiplayerSettingsSync.handle_settings_request(requester_sid, sync_type)
+              end
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_REQUEST_SENT:")
+            # Confirmation that our request was sent
+            target_sid = data.sub("MP_SETTINGS_REQUEST_SENT:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("MP-SYNC", "Settings request sent to #{target_sid}")
+            end
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_ERROR:")
+            # Error from server (e.g., target offline)
+            error = data.sub("MP_SETTINGS_ERROR:", "")
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.warn("MP-SYNC", "Settings sync error: #{error}")
+            end
+            pbMessage(_INTL("Settings sync failed: Target player is offline.")) if error == "TARGET_OFFLINE"
+            next
+          end
+
+          if data.start_with?("MP_SETTINGS_RESPONSE:")
+            # Format from server: MP_SETTINGS_RESPONSE:<sender_sid>|<sync_type>|<json_data>
+            parts = data.sub("MP_SETTINGS_RESPONSE:", "").split("|", 3)
+            if parts.length == 3
+              sender_sid, sync_type, json_data = parts
+
+              if defined?(MultiplayerDebug)
+                MultiplayerDebug.info("MP-SYNC", "Settings response from #{sender_sid}, type: #{sync_type}")
+              end
+
+              if defined?(MultiplayerSettingsSync)
+                MultiplayerSettingsSync.handle_settings_response(sync_type, json_data)
+              end
+            end
+            next
+          end
+
+          if data.start_with?("MP_TIMEOUT_SETTING:")
+            # Squad member broadcast their timeout setting
+            # Format: MP_TIMEOUT_SETTING:<disabled>
+            disabled = data.sub("MP_TIMEOUT_SETTING:", "").strip == "1"
+            if defined?(MultiplayerDebug)
+              MultiplayerDebug.info("MP-TIMEOUT", "Received timeout setting: disabled=#{disabled}")
+            end
+            # Could show a notification or update squad state
             next
           end
 
@@ -2412,6 +2646,73 @@ module MultiplayerClient
   end
   def self.trade_events_pending?; !@_trade_event_q.empty?; end
   def self.next_trade_event; @_trade_event_q.shift; end
+
+  # ===========================================
+  # === PvP: Public API for UI layer
+  # ===========================================
+  def self.pvp_invite(target_sid)
+    send_data("PVP_INVITE:#{target_sid}", rate_limit_type: :PVP_INVITE)
+  end
+
+  def self.pvp_accept(requester_sid)
+    send_data("PVP_RESP:#{requester_sid}|ACCEPT", rate_limit_type: :PVP_INVITE)
+  end
+
+  def self.pvp_decline(requester_sid)
+    send_data("PVP_RESP:#{requester_sid}|DECLINE")
+  end
+
+  def self.pvp_update_settings(bid, settings_hash)
+    json = MiniJSON.dump(settings_hash)
+    send_data("PVP_SETTINGS_UPDATE:#{bid}|#{json}")
+  end
+
+  def self.pvp_send_selections(bid, indices)
+    hex = BinHex.encode(Marshal.dump(indices))
+    send_data("PVP_PARTY_SELECTION:#{bid}|#{hex}")
+  end
+
+  def self.pvp_send_party(bid, party)
+    hex = BinHex.encode(Marshal.dump(party))
+    send_data("PVP_PARTY_PUSH:#{bid}|#{hex}")
+  end
+
+  def self.pvp_start_battle(bid, settings)
+    json = MiniJSON.dump(settings)
+    send_data("PVP_START_BATTLE:#{bid}|#{json}")
+  end
+
+  def self.pvp_cancel(bid)
+    send_data("PVP_CANCEL:#{bid}")
+  end
+
+  # --- PvP: Accessors for UI ---
+  def self.pvp_active?
+    @pvp && @pvp[:state] == "active"
+  end
+
+  def self.push_pvp_event(ev)
+    @queue_mutex.synchronize do
+      @_pvp_event_q << ev
+    end
+  end
+
+  def self.next_pvp_event
+    @queue_mutex.synchronize do
+      @_pvp_event_q.shift
+    end
+  end
+
+  def self.pvp_events_pending?
+    @queue_mutex.synchronize do
+      !@_pvp_event_q.empty?
+    end
+  end
+
+  def self.clear_pvp_state
+    @pvp = nil
+    @_pvp_event_q.clear
+  end
 
   # ===========================================
   # === GTS: Public API (client -> server) ===

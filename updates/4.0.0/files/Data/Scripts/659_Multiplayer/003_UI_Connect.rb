@@ -131,27 +131,60 @@ module MultiplayerUI
   # ===========================================
     def self.openMultiplayerMenu
     load_settings
-    connect_label = MultiplayerClient.instance_variable_get(:@connected) ? "Disconnect" : "Connect"
-    commands = ["Server Settings", connect_label, "Couch Coop Mode", "Cancel"]
+    is_connected = MultiplayerClient.instance_variable_get(:@connected)
+    connect_label = is_connected ? "Disconnect" : "Connect"
+
+    # Build commands array - add Multiplayer Options only when connected
+    commands = ["Server Settings", connect_label]
+    commands << "Multiplayer Options" if is_connected
+    commands << "Couch Coop Mode"
+    commands << "Cancel"
+
     cmd = pbMessage(_INTL("Multiplayer Menu:"), commands, 0)
 
+    # Handle commands based on position
     case cmd
     when 0
         openServerSettings
     when 1
-        if MultiplayerClient.instance_variable_get(:@connected)
-        MultiplayerClient.disconnect
-        pbMessage(_INTL("Disconnected from server."))
-        ##MultiplayerDebug.info("UI-018", "Disconnected manually by user.")
+        if is_connected
+          MultiplayerClient.disconnect
+          pbMessage(_INTL("Disconnected from server."))
+          ##MultiplayerDebug.info("UI-018", "Disconnected manually by user.")
         else
-        connectToServer
+          connectToServer
         end
     when 2
-        openCouchCoopMenu
+        if is_connected
+          # Multiplayer Options menu
+          openMultiplayerOptionsMenu
+        else
+          # Couch Coop (shifted because no MP Options when disconnected)
+          openCouchCoopMenu
+        end
+    when 3
+        if is_connected
+          # Couch Coop when connected
+          openCouchCoopMenu
+        else
+          # Cancel when disconnected
+          ##MultiplayerDebug.info("UI-011", "Multiplayer menu closed.")
+        end
     else
         ##MultiplayerDebug.info("UI-011", "Multiplayer menu closed.")
     end
     end
+
+  # ===========================================
+  # === Open Multiplayer Options submenu
+  # ===========================================
+  def self.openMultiplayerOptionsMenu
+    pbFadeOutIn {
+      scene = MultiplayerOptScene.new
+      screen = PokemonOptionScreen.new(scene)
+      screen.pbStartScreen
+    }
+  end
 
 
   def self.openServerSettings

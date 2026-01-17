@@ -108,8 +108,20 @@ class Pokemon
   end
 
   # Helper method to check if this Pokemon has a family assigned
+  # Respects the runtime Family System toggle from Multiplayer Options
   def has_family?
-    return false unless PokemonFamilyConfig::FAMILY_SYSTEM_ENABLED
+    # Check runtime setting first (from $PokemonSystem), then fall back to config
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_enabled)
+      return false if $PokemonSystem.mp_family_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return false unless PokemonFamilyConfig.system_enabled?
+    end
+    return !@family.nil? && !@subfamily.nil?
+  end
+
+  # Helper to check if this Pokemon has family data stored (ignores toggle)
+  # Used for checking if family exists regardless of display setting
+  def has_family_data?
     return !@family.nil? && !@subfamily.nil?
   end
 end

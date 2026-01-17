@@ -313,6 +313,11 @@ class PokemonDataBox < SpriteWrapper
     return false unless @family_init_done
     return false unless @battler && @battler.pokemon
 
+    # Check if Family Font is enabled in settings
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_font_enabled)
+      return false if $PokemonSystem.mp_family_font_enabled == 0
+    end
+
     # Show for all Pokemon (player, allies, and enemies)
     # Line removed: return false if @battler.opposes?(0)  # Now showing for opponent Pokemon too!
 

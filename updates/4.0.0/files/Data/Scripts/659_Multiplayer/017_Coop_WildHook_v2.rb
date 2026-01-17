@@ -450,12 +450,22 @@ module CoopWildHook
       decision = 0
       canLose = false
 
-      pbBattleAnimation(pbGetWildBattleBGM(foeParty), (foeParty.length == 1) ? 0 : 2, foeParty) {
-        pbSceneStandby {
-          decision = battle.pbStartBattle
+      begin
+        pbBattleAnimation(pbGetWildBattleBGM(foeParty), (foeParty.length == 1) ? 0 : 2, foeParty) {
+          pbSceneStandby {
+            decision = battle.pbStartBattle
+          }
+          pbAfterBattle(decision, canLose)
         }
-        pbAfterBattle(decision, canLose)
-      }
+      rescue => e
+        # CRASH PROTECTION: Default to forfeit (draw) instead of win on error
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.error(TAG, "JOIN: Battle crashed! #{e.class}: #{e.message}")
+          MultiplayerDebug.error(TAG, "JOIN: Backtrace: #{e.backtrace.first(5).join("\n")}")
+        end
+        decision = 3  # Forfeit/draw - not a win
+        pbMessage(_INTL("The battle ended due to an error."))
+      end
       Input.update
 
       ##MultiplayerDebug.info(TAG, "JOIN: Battle ended: decision=#{decision}")
@@ -786,12 +796,18 @@ if defined?(Kernel) && (method(:pbBattleOnStepTaken) rescue true)
       # Build foe party
       foeParty = []
       first_foe = pbGenerateWildPokemon(encounter[0], encounter[1])
+      # IMPORTANT: Force shiny calculation and cache it BEFORE sending to allies
+      # This prevents desync due to different trainer IDs on different clients
+      first_foe.shiny?  # Forces @shiny to be set based on initiator's trainer ID
       foeParty << first_foe
-      ##MultiplayerDebug.info("COOP-V2", "First foe: #{CoopLogUtil.dex_name(first_foe)}")
+      ##MultiplayerDebug.info("COOP-V2", "First foe: #{CoopLogUtil.dex_name(first_foe)} shiny=#{first_foe.shiny?}")
 
       # Expand foes to match player count
       total_players = 1 + ally_count
       CoopWildHook.expand_foes!(foeParty, total_players, encounter_type)
+
+      # Force shiny calculation for all expanded foes too
+      foeParty.each { |pkmn| pkmn.shiny? if pkmn }
 
       # === BROADCAST BATTLE INVITATION TO ALLIES ===
       # Build complete participant list: initiator + allies
@@ -972,12 +988,22 @@ if defined?(Kernel) && (method(:pbBattleOnStepTaken) rescue true)
       outcomeVar = 1
       canLose = false
 
-      pbBattleAnimation(pbGetWildBattleBGM(foeParty), (foeParty.length == 1) ? 0 : 2, foeParty) {
-        pbSceneStandby {
-          decision = battle.pbStartBattle
+      begin
+        pbBattleAnimation(pbGetWildBattleBGM(foeParty), (foeParty.length == 1) ? 0 : 2, foeParty) {
+          pbSceneStandby {
+            decision = battle.pbStartBattle
+          }
+          pbAfterBattle(decision, canLose)
         }
-        pbAfterBattle(decision, canLose)
-      }
+      rescue => e
+        # CRASH PROTECTION: Default to forfeit (draw) instead of win on error
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.error("COOP-V2", "Battle crashed! #{e.class}: #{e.message}")
+          MultiplayerDebug.error("COOP-V2", "Backtrace: #{e.backtrace.first(5).join("\n")}")
+        end
+        decision = 3  # Forfeit/draw - not a win
+        pbMessage(_INTL("The battle ended due to an error."))
+      end
       Input.update
 
       ##MultiplayerDebug.info("COOP-V2", "Battle ended: decision=#{decision}")

@@ -68,6 +68,8 @@ module RateLimit
       ACTION_LIMIT
     when :TRAINER_SYNC
       10  # Trainer battle sync messages (invites, joins, start)
+    when :PVP_INVITE
+      3   # PvP invitations (prevent spam)
     else
       GENERAL_LIMIT
     end

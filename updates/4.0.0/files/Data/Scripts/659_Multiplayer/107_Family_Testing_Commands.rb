@@ -23,7 +23,7 @@
 #===============================================================================
 
 # TESTING COMMANDS DISABLED - Set to true to enable
-FAMILY_TESTING_COMMANDS_ENABLED = false
+FAMILY_TESTING_COMMANDS_ENABLED = true
 
 # Extend ChatCommands to add family testing commands
 module ChatCommands

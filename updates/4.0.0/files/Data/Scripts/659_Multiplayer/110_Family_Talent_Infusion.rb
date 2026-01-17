@@ -73,9 +73,21 @@ class Pokemon
   private
 
   def should_apply_family_talent?
-    return false unless PokemonFamilyConfig::ENABLE_TALENT_INFUSION
-    return false unless PokemonFamilyConfig::FAMILY_SYSTEM_ENABLED
-    return false unless has_family?
+    # Check runtime Family Abilities setting first (from $PokemonSystem)
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_abilities_enabled)
+      return false if $PokemonSystem.mp_family_abilities_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return false unless PokemonFamilyConfig.talent_infusion_enabled?
+    end
+
+    # Check runtime Family System setting
+    if defined?($PokemonSystem) && $PokemonSystem && $PokemonSystem.respond_to?(:mp_family_enabled)
+      return false if $PokemonSystem.mp_family_enabled == 0
+    elsif defined?(PokemonFamilyConfig)
+      return false unless PokemonFamilyConfig.system_enabled?
+    end
+
+    return false unless has_family_data?  # Use has_family_data? to check raw data, not display toggle
     return true
   end
 end

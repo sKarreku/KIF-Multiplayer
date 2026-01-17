@@ -18,7 +18,72 @@ module FamilyUnfuseIntegration
       MultiplayerDebug.info("FAMILY-UNFUSE", "Fused Pokemon: #{fused_pokemon.name}")
       MultiplayerDebug.info("FAMILY-UNFUSE", "Body stored family: #{fused_pokemon.body_family}")
       MultiplayerDebug.info("FAMILY-UNFUSE", "Head stored family: #{fused_pokemon.head_family}")
+      MultiplayerDebug.info("FAMILY-UNFUSE", "Current fusion family: #{fused_pokemon.family}")
+      MultiplayerDebug.info("FAMILY-UNFUSE", "Body shiny: #{body_pokemon.shiny?}")
+      MultiplayerDebug.info("FAMILY-UNFUSE", "Head shiny: #{head_pokemon.shiny?}")
     end
+
+    # Check if this was a wild-caught fusion (neither parent had stored family)
+    # In this case, the family was assigned to the fusion AFTER catching
+    wild_caught_fusion = fused_pokemon.body_family.nil? && fused_pokemon.head_family.nil?
+
+    if wild_caught_fusion && fused_pokemon.family
+      # Wild-caught fusion with family: Give family to the SHINY component
+      # (since family is only assigned to shinies, at least one must be shiny)
+
+      if head_pokemon.shiny? && !body_pokemon.shiny?
+        # Only head is shiny - give family to head
+        head_pokemon.family = fused_pokemon.family
+        head_pokemon.subfamily = fused_pokemon.subfamily
+        head_pokemon.family_assigned_at = fused_pokemon.family_assigned_at
+
+        if defined?(MultiplayerDebug)
+          family_name = PokemonFamilyConfig::FAMILIES[fused_pokemon.family][:name]
+          MultiplayerDebug.info("FAMILY-UNFUSE", "Wild fusion: Gave family #{family_name} to shiny HEAD")
+        end
+
+      elsif body_pokemon.shiny? && !head_pokemon.shiny?
+        # Only body is shiny - give family to body
+        body_pokemon.family = fused_pokemon.family
+        body_pokemon.subfamily = fused_pokemon.subfamily
+        body_pokemon.family_assigned_at = fused_pokemon.family_assigned_at
+
+        if defined?(MultiplayerDebug)
+          family_name = PokemonFamilyConfig::FAMILIES[fused_pokemon.family][:name]
+          MultiplayerDebug.info("FAMILY-UNFUSE", "Wild fusion: Gave family #{family_name} to shiny BODY")
+        end
+
+      elsif body_pokemon.shiny? && head_pokemon.shiny?
+        # Both are shiny - give family to BOTH (rare double shiny)
+        body_pokemon.family = fused_pokemon.family
+        body_pokemon.subfamily = fused_pokemon.subfamily
+        body_pokemon.family_assigned_at = fused_pokemon.family_assigned_at
+
+        head_pokemon.family = fused_pokemon.family
+        head_pokemon.subfamily = fused_pokemon.subfamily
+        head_pokemon.family_assigned_at = fused_pokemon.family_assigned_at
+
+        if defined?(MultiplayerDebug)
+          family_name = PokemonFamilyConfig::FAMILIES[fused_pokemon.family][:name]
+          MultiplayerDebug.info("FAMILY-UNFUSE", "Wild fusion: Both shiny - gave family #{family_name} to BOTH")
+        end
+
+      else
+        # Neither is shiny (shouldn't happen since family requires shiny, but fallback to body)
+        body_pokemon.family = fused_pokemon.family
+        body_pokemon.subfamily = fused_pokemon.subfamily
+        body_pokemon.family_assigned_at = fused_pokemon.family_assigned_at
+
+        if defined?(MultiplayerDebug)
+          family_name = PokemonFamilyConfig::FAMILIES[fused_pokemon.family][:name]
+          MultiplayerDebug.info("FAMILY-UNFUSE", "Wild fusion: No shiny detected - fallback gave family #{family_name} to BODY")
+        end
+      end
+
+      return  # Don't continue to normal restoration logic
+    end
+
+    # Normal case: Restore stored family data from fusion
 
     # Restore body Pokemon's family
     if fused_pokemon.body_family

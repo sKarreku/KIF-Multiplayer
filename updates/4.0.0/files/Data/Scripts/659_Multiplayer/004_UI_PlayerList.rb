@@ -202,7 +202,7 @@ module MultiplayerUI
           end
 
           # Build per-player actions
-          actions = [_INTL("Invite to Squad"), _INTL("Request Trade"), _INTL("Cancel")]
+          actions = [_INTL("Invite to Squad"), _INTL("Let's Battle!"), _INTL("Request Trade"), _INTL("Cancel")]
           act = pbMessage(_INTL("Player: {1}", name), actions, 0)
 
           case act
@@ -222,6 +222,24 @@ module MultiplayerUI
             end
 
           when 1
+            # Let's Battle!
+            begin
+              if defined?(PvPBattleState) && defined?(MultiplayerClient.pvp_active?) && MultiplayerClient.pvp_active?
+                pbMessage(_INTL("You are already in a PvP battle setup."))
+              elsif MultiplayerClient.trade_active?
+                pbMessage(_INTL("You are currently trading."))
+              elsif defined?(CoopBattleState) && CoopBattleState.in_coop_battle?
+                pbMessage(_INTL("You are currently in a coop battle."))
+              else
+                MultiplayerClient.pvp_invite(sid)
+                pbMessage(_INTL("Battle request sent to {1}.", name))
+              end
+            rescue => e
+              ##MultiplayerDebug.error("UI-PL-PVP-ERR", "Error sending battle request: #{e.message}") if defined?(MultiplayerDebug)
+              pbMessage(_INTL("Failed to send battle request."))
+            end
+
+          when 2
             # Request Trade
             begin
               # Optional: prevent starting a new trade if already trading

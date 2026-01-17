@@ -6,5 +6,5 @@
 #===============================================================================
 
 module MultiplayerVersion
-  CURRENT_VERSION = "3.0.2"
+  CURRENT_VERSION = "4.0.0"
 end
