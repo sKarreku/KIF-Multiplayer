@@ -1824,11 +1824,73 @@ loop do
 
 
           # ======================================
-          # === CO-OP: Battle queue first-come-first-served
+          # === CO-OP: Battle queue first-come-first-served (JSON - SECURE)
           # ======================================
+          # NEW: JSON-based battle invite (no Marshal, safer for network)
+          if data.start_with?("COOP_BTL_START_JSON:")
+            payload = data.sub("COOP_BTL_START_JSON:", "")
+            squad_id = member_squad[sid]
+
+            MultiplayerDebug.info("COOP-JSON", "Received COOP_BTL_START_JSON from #{sid} (len=#{payload.length})")
+
+            # Check if squad has active battle
+            if squad_id && active_battles[squad_id]
+              existing = active_battles[squad_id]
+              # Check timeout (auto-clear stale locks)
+              if Time.now - existing[:started_at] > BATTLE_LOCK_TIMEOUT
+                active_battles.delete(squad_id)
+                MultiplayerDebug.info("COOP-QUEUE", "Cleared stale battle lock for squad #{squad_id}")
+              elsif existing[:initiator_sid] != sid
+                # Another player started battle first - auto-join them instead
+                MultiplayerDebug.info("COOP-QUEUE", "Auto-joining #{sid} to #{existing[:initiator_sid]}'s battle (JSON)")
+
+                # Send the original battle invite to this player
+                if existing[:payload]
+                  # Forward with same format as original (JSON or Marshal)
+                  msg_type = existing[:payload_type] || "COOP_BTL_START_JSON"
+                  safe_send(c, "FROM:#{existing[:initiator_sid]}|#{msg_type}:#{existing[:payload]}")
+                  MultiplayerDebug.info("COOP-QUEUE", "Forwarded battle invite to #{sid} (#{msg_type})")
+                else
+                  # Fallback - just notify them
+                  safe_send(c, "COOP_BATTLE_BUSY:#{existing[:initiator_sid]}")
+                  MultiplayerDebug.info("COOP-QUEUE", "No payload stored, sent BUSY to #{sid}")
+                end
+                next
+              end
+            end
+
+            # First request or timeout cleared - claim battle slot and store payload
+            if squad_id
+              active_battles[squad_id] = {
+                initiator_sid: sid,
+                battle_type: :wild,
+                started_at: Time.now,
+                payload: payload,
+                payload_type: "COOP_BTL_START_JSON"  # Track format for late joiners
+              }
+              MultiplayerDebug.info("COOP-QUEUE", "#{sid} claimed battle slot for squad #{squad_id} (JSON)")
+            end
+
+            # Relay to squad
+            recips = coop_recipients_for(sid, squads, member_squad, client_data)
+            if recips.empty?
+              MultiplayerDebug.info("COOP", "No eligible recipients for COOP_BTL_START_JSON from #{sid}")
+            else
+              recips.each { |rsid| safe_send_sid(sid_sockets, rsid, "FROM:#{sid}|COOP_BTL_START_JSON:#{payload}") }
+              MultiplayerDebug.info("COOP", "Relayed COOP_BTL_START_JSON from #{sid} -> #{recips.join('/')} len=#{payload.length}")
+            end
+            next
+          end
+
+          # ======================================
+          # === CO-OP: Battle queue first-come-first-served (Marshal - LEGACY)
+          # ======================================
+          # OLD: Marshal-based battle invite (kept for backward compatibility)
           if data.start_with?("COOP_BTL_START:")
             payload = data.sub("COOP_BTL_START:", "")
             squad_id = member_squad[sid]
+
+            MultiplayerDebug.warn("COOP", "Received LEGACY COOP_BTL_START (Marshal) from #{sid} - consider upgrading client")
 
             # Check if squad has active battle
             if squad_id && active_battles[squad_id]
@@ -1843,7 +1905,8 @@ loop do
 
                 # Send the original battle invite to this player
                 if existing[:payload]
-                  safe_send(c, "FROM:#{existing[:initiator_sid]}|COOP_BTL_START:#{existing[:payload]}")
+                  msg_type = existing[:payload_type] || "COOP_BTL_START"
+                  safe_send(c, "FROM:#{existing[:initiator_sid]}|#{msg_type}:#{existing[:payload]}")
                   MultiplayerDebug.info("COOP-QUEUE", "Forwarded battle invite to #{sid}")
                 else
                   # Fallback - just notify them
@@ -1860,7 +1923,8 @@ loop do
                 initiator_sid: sid,
                 battle_type: :wild,
                 started_at: Time.now,
-                payload: payload  # Store for late joiners
+                payload: payload,
+                payload_type: "COOP_BTL_START"  # Track format for late joiners
               }
               MultiplayerDebug.info("COOP-QUEUE", "#{sid} claimed battle slot for squad #{squad_id}")
             end

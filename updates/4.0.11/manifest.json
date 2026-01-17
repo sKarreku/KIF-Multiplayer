@@ -1,7 +1,7 @@
 {
   "version": "4.0.11",
-  "release_date": "2026-01-17T19:23:56Z",
-  "changelog": "Update to version 4.0.11",
+  "release_date": "2026-01-17T19:40:57Z",
+  "changelog": "Fixing - Marshal Patch",
   "update_type": "delta",
   "files": [
     {
@@ -30,9 +30,15 @@
     },
     {
       "path": "Data/Scripts/659_Multiplayer/002_Client.rb",
-      "md5": "f65ede892bb6dba52f297472a8ed0698",
-      "size": 121981,
+      "md5": "76fd4be108db9fd268058e31388ca715",
+      "size": 126805,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.11/files/Data/Scripts/659_Multiplayer/002_Client.rb"
+    },
+    {
+      "path": "Data/Scripts/659_Multiplayer/002_PokemonSerializer.rb",
+      "md5": "03dfbea9db08b0c90c3be97917d2b606",
+      "size": 21476,
+      "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.11/files/Data/Scripts/659_Multiplayer/002_PokemonSerializer.rb"
     },
     {
       "path": "Data/Scripts/659_Multiplayer/002_Version.rb",
@@ -120,8 +126,8 @@
     },
     {
       "path": "Data/Scripts/659_Multiplayer/017_Coop_WildHook_v2.rb",
-      "md5": "32dc94820baa330c42bf868f8ae36ebe",
-      "size": 45924,
+      "md5": "affa89a8339bbc7403a1fbbe7ab95fb6",
+      "size": 47425,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.11/files/Data/Scripts/659_Multiplayer/017_Coop_WildHook_v2.rb"
     },
     {
@@ -684,8 +690,8 @@
     },
     {
       "path": "KIFM/server.rb",
-      "md5": "743316a333d0cfcc6e4a9218fc6ba9d3",
-      "size": 154731,
+      "md5": "be74126d01877295208a71810d91ef9c",
+      "size": 158212,
       "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.11/files/KIFM/server.rb"
     },
     {
@@ -787,9 +793,9 @@
   ],
   "full_archive": {
     "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/dev/updates/4.0.11/v4.0.11.rar",
-    "md5": "e53bb85200412bf010ef0611a5e778ad",
-    "sha256": "b80e4aec994b55c727a8d10cc8061fbd8e1e4c62fbc4b6ed60a69e784ca1da57",
-    "size": 1238771,
+    "md5": "97ecd815194861d9d1caf8da1850c4e6",
+    "sha256": "370f183d5f1edd3ad9e116726db2d48f4d0e74284b51ee8712a55a7b3893e0e9",
+    "size": 1244548,
     "filename": "v4.0.11.rar"
   }
 }

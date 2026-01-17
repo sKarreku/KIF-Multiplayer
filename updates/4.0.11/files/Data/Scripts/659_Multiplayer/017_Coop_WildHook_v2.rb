@@ -46,37 +46,79 @@ module CoopWildHook
         return
       end
 
-      # Serialize complete foe party as Pokemon objects (to preserve IVs, moves, ability, etc.)
-      # This ensures all players fight the exact same wild Pokemon
-      foes_data = foe_party  # Marshal will serialize the full Pokemon objects
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info(TAG, "=" * 70)
+        MultiplayerDebug.info(TAG, "BROADCAST BATTLE INVITE START")
+        MultiplayerDebug.info(TAG, "  Foes: #{foe_party.length}")
+        MultiplayerDebug.info(TAG, "  Allies: #{allies.length}")
+        MultiplayerDebug.info(TAG, "  Encounter type: #{encounter_type}")
+        MultiplayerDebug.info(TAG, "  Battle ID: #{battle_id}")
+      end
 
-      # Serialize ally list (SIDs + names + current party with HP)
-      # IMPORTANT: Include party data so non-initiators get fresh HP values
-      allies_data = allies.map do |a|
-        {
-          sid: a[:sid].to_s,
-          name: a[:name].to_s,
-          party: a[:party]  # Include full party with current HP
+      # Use PokemonSerializer for JSON-based serialization (replaces Marshal for security)
+      if defined?(PokemonSerializer)
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info(TAG, "  Using PokemonSerializer (JSON-safe)")
+        end
+
+        # Serialize using PokemonSerializer
+        invite_payload = PokemonSerializer.serialize_battle_invite(foe_party, allies, encounter_type, battle_id)
+
+        # Convert to JSON string
+        json_str = MiniJSON.dump(invite_payload)
+
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info(TAG, "  JSON serialized: #{json_str.length} chars")
+        end
+
+        # Send as JSON (no BinHex needed for JSON)
+        MultiplayerClient.send_data("COOP_BTL_START_JSON:#{json_str}")
+
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info(TAG, "  Sent COOP_BTL_START_JSON message")
+          MultiplayerDebug.info(TAG, "BROADCAST BATTLE INVITE END (JSON)")
+          MultiplayerDebug.info(TAG, "=" * 70)
+        end
+      else
+        # Fallback to old Marshal method if PokemonSerializer not available
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.warn(TAG, "  PokemonSerializer not available, falling back to Marshal")
+        end
+
+        # Serialize ally list (SIDs + names + current party with HP)
+        allies_data = allies.map do |a|
+          {
+            sid: a[:sid].to_s,
+            name: a[:name].to_s,
+            party: a[:party]
+          }
+        end
+
+        invite_payload = {
+          foes: foe_party,
+          allies: allies_data,
+          encounter_type: encounter_type,
+          battle_id: battle_id
         }
+
+        raw = Marshal.dump(invite_payload)
+        hex = BinHex.encode(raw) if defined?(BinHex)
+
+        unless hex && hex.length > 0
+          if defined?(MultiplayerDebug)
+            MultiplayerDebug.error(TAG, "BinHex encoding failed")
+          end
+          return
+        end
+
+        MultiplayerClient.send_data("COOP_BTL_START:#{hex}")
+
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info(TAG, "  Sent COOP_BTL_START (Marshal fallback)")
+          MultiplayerDebug.info(TAG, "BROADCAST BATTLE INVITE END (Marshal)")
+          MultiplayerDebug.info(TAG, "=" * 70)
+        end
       end
-
-      invite_payload = {
-        foes: foes_data,
-        allies: allies_data,
-        encounter_type: encounter_type,
-        battle_id: battle_id  # Include battle ID for tracking
-      }
-
-      raw = Marshal.dump(invite_payload)
-      hex = BinHex.encode(raw) if defined?(BinHex)
-
-      unless hex && hex.length > 0
-        ##MultiplayerDebug.error(TAG, "BinHex encoding failed")
-        return
-      end
-
-      MultiplayerClient.send_data("COOP_BTL_START:#{hex}")
-      ##MultiplayerDebug.info(TAG, "Broadcast COOP_BTL_START: foes=#{foe_party.length} allies=#{allies_data.length} hex_len=#{hex.length}")
 
       # Note: If another player started first, server auto-joins us to their battle
       # Server sends COOP_BTL_START from first initiator, our client handles it like normal invite

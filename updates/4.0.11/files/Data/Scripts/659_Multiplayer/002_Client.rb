@@ -758,6 +758,108 @@ module MultiplayerClient
     end
   end
 
+  # ===========================================
+  # === Co-op Battle Invitation (JSON format) - SECURE
+  # ===========================================
+  # This handler uses PokemonSerializer (JSON-based) instead of Marshal.
+  # JSON cannot execute arbitrary code, making this safer for network data.
+  def self._handle_coop_battle_invite_json(from_sid, json_str)
+    begin
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("C-COOP-JSON", "=" * 70)
+        MultiplayerDebug.info("C-COOP-JSON", "HANDLE BATTLE INVITE JSON START")
+        MultiplayerDebug.info("C-COOP-JSON", "  From: #{from_sid}")
+        MultiplayerDebug.info("C-COOP-JSON", "  JSON length: #{json_str.length} chars")
+      end
+
+      # Parse JSON string
+      json_data = MiniJSON.parse(json_str)
+
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("C-COOP-JSON", "  JSON parsed successfully")
+        MultiplayerDebug.info("C-COOP-JSON", "  Keys: #{json_data.keys.inspect}")
+      end
+
+      unless json_data.is_a?(Hash)
+        raise "Parsed JSON is not a Hash (got #{json_data.class})"
+      end
+
+      # Use PokemonSerializer to deserialize the battle invite
+      unless defined?(PokemonSerializer)
+        raise "PokemonSerializer not available"
+      end
+
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("C-COOP-JSON", "  Deserializing with PokemonSerializer...")
+      end
+
+      deserialized = PokemonSerializer.deserialize_battle_invite(json_data)
+
+      unless deserialized
+        raise "PokemonSerializer.deserialize_battle_invite returned nil"
+      end
+
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.info("C-COOP-JSON", "  Deserialization complete")
+        MultiplayerDebug.info("C-COOP-JSON", "  Foes: #{deserialized[:foes].length}")
+        MultiplayerDebug.info("C-COOP-JSON", "  Allies: #{deserialized[:allies].length}")
+      end
+
+      # Validate foes are actual Pokemon objects
+      deserialized[:foes].each_with_index do |foe, i|
+        unless foe.is_a?(Pokemon)
+          raise "Foe #{i} is not a Pokemon (got #{foe.class})"
+        end
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info("C-COOP-JSON", "    Foe #{i}: #{foe.name} Lv.#{foe.level} HP=#{foe.hp}/#{foe.totalhp}")
+        end
+      end
+
+      # Validate allies have Pokemon parties
+      deserialized[:allies].each_with_index do |ally, i|
+        if defined?(MultiplayerDebug)
+          MultiplayerDebug.info("C-COOP-JSON", "    Ally #{i}: #{ally[:name]} (SID: #{ally[:sid]}) party=#{ally[:party].length}")
+        end
+        ally[:party].each_with_index do |pkmn, j|
+          unless pkmn.is_a?(Pokemon)
+            raise "Ally #{i} party member #{j} is not a Pokemon (got #{pkmn.class})"
+          end
+        end
+      end
+
+      # Build invite hash (same format as Marshal version)
+      invite = {
+        from_sid: from_sid.to_s,
+        foes: deserialized[:foes],
+        allies: deserialized[:allies],
+        encounter_type: deserialized[:encounter_type],
+        battle_id: deserialized[:battle_id],
+        timestamp: Time.now
+      }
+
+      # Clear queue and store ONLY this invite (single active invite limit)
+      old_count = @coop_battle_queue.length
+      @coop_battle_queue.clear
+      @coop_battle_queue << invite
+
+      if defined?(MultiplayerDebug)
+        if old_count > 0
+          MultiplayerDebug.info("C-COOP-JSON", "  Cleared #{old_count} old invite(s)")
+        end
+        MultiplayerDebug.info("C-COOP-JSON", "  QUEUED battle invite: foes=#{invite[:foes].length} allies=#{invite[:allies].length} battle_id=#{invite[:battle_id].inspect}")
+        MultiplayerDebug.info("C-COOP-JSON", "HANDLE BATTLE INVITE JSON END - SUCCESS")
+        MultiplayerDebug.info("C-COOP-JSON", "=" * 70)
+      end
+
+    rescue => e
+      if defined?(MultiplayerDebug)
+        MultiplayerDebug.error("C-COOP-JSON", "BATTLE INVITE JSON ERROR: #{e.class}: #{e.message}")
+        MultiplayerDebug.error("C-COOP-JSON", "  Backtrace: #{e.backtrace.first(5).join(' | ')}")
+        MultiplayerDebug.error("C-COOP-JSON", "=" * 70)
+      end
+    end
+  end
+
   def self.coop_battle_pending?
     # Clean expired invites (>10 seconds old)
     unless @coop_battle_queue.empty?
@@ -1926,10 +2028,22 @@ module MultiplayerClient
                 ##MultiplayerDebug.info("C-COOP", "[NET] COOP_PARTY_PUSH_HEX from #{sid} (hex_len=#{hex.length})")
                 _handle_coop_party_push_hex(sid, hex)
 
+              elsif payload.start_with?("COOP_BTL_START_JSON:")
+                # NEW: JSON-based battle invite (secure, no Marshal)
+                json_str = payload.sub("COOP_BTL_START_JSON:", "")
+                if defined?(MultiplayerDebug)
+                  MultiplayerDebug.info("C-COOP", "[NET] COOP_BTL_START_JSON from #{sid} (json_len=#{json_str.length})")
+                end
+                _handle_coop_battle_invite_json(sid, json_str)
+
               elsif payload.start_with?("COOP_BTL_START:")
+                # OLD: Marshal-based battle invite (kept for backward compatibility)
                 hex = payload.sub("COOP_BTL_START:", "")
-                ##MultiplayerDebug.info("C-COOP", "[NET] COOP_BTL_START from #{sid} (hex_len=#{hex.length})")
+                if defined?(MultiplayerDebug)
+                  MultiplayerDebug.warn("C-COOP", "[NET] COOP_BTL_START (Marshal) from #{sid} - consider upgrading sender")
+                end
                 _handle_coop_battle_invite(sid, hex)
+
               elsif payload.start_with?("COOP_BATTLE_JOINED:")
                 ##MultiplayerDebug.info("C-COOP", "[NET] COOP_BATTLE_JOINED from #{sid}")
                 _handle_coop_battle_joined(sid)
