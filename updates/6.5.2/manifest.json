@@ -1,6 +1,6 @@
 {
   "version": "6.5.2",
-  "release_date": "2026-03-29T11:42:24Z",
+  "release_date": "2026-03-29T11:57:32Z",
   "changelog": "Update to version 6.5.2",
   "update_type": "delta",
   "files": [
@@ -35773,8 +35773,8 @@
   ],
   "full_archive": {
     "url": "https://raw.githubusercontent.com/skarreku/KIF-Multiplayer/main/updates/6.5.2/v6.5.2.7z",
-    "md5": "ec0aaddbe5aea09a6023ddf0e17372c5",
-    "sha256": "bdc059519ee88a36e741f5f70804500b2e8e6f52ead30feaad80306c63ed79aa",
+    "md5": "7cf57cfe4421d86304671a6b30e6649e",
+    "sha256": "1a4afbcef22a44d2cd6a8c211b280679eb13b2ad10fc1b9b9afa9c87bf130acd",
     "size": 111678025,
     "filename": "v6.5.2.7z"
   }
